@@ -200,6 +200,22 @@ export const translations = {
       accessSystems: "Access MultiEdge Systems",
     },
 
+    // Registration Popup
+    register: {
+      modalTitle: "Get Started with MultiEdge",
+      intro: "Follow these two simple steps to start copy trading with MultiEdge systems.",
+      step1Title: "Open a Trading Account",
+      step1Desc: "Register with our recommended broker Doo Prime to get access to competitive spreads and reliable execution.",
+      step1Btn: "Open Doo Prime Account",
+      brokerDesc: "Regulated • Low Spreads • Fast Execution",
+      step2Title: "Connect to MultiEdge Systems",
+      step2Desc: "Register on our copy trading platform to connect your broker account and start copying our automated strategies.",
+      step2Btn: "Register for Copy Trading",
+      required: "Required",
+      then: "then",
+      disclaimer: "Trading involves significant risk of loss. Past performance does not guarantee future results. Only invest what you can afford to lose.",
+    },
+
     // FAQ
     faq: {
       kicker: "FAQ",
@@ -273,7 +289,7 @@ export const translations = {
       stat1Desc: "Reglas predefinidas antes del despliegue.",
       stat2Title: "Ejecución Basada en Reglas",
       stat2Desc: "Elimina emociones y discreción.",
-      stat3Title: "Agnóstico de Broker",
+      stat3Title: "Flexibilidad de Broker",
       stat3Desc: "Conecta con brokers de copy compatibles.",
       visualTitle: "Estabilidad sobre especulación",
       visualDesc: "Arquitectura centrada en el riesgo. Perfiles de drawdown conservadores. Reglas transparentes.",
@@ -429,6 +445,22 @@ export const translations = {
       subtitle: "Comienza con MultiEdge.",
       readFaq: "Leer FAQ",
       accessSystems: "Acceder a Sistemas MultiEdge",
+    },
+
+    // Registration Popup
+    register: {
+      modalTitle: "Comienza con MultiEdge",
+      intro: "Sigue estos dos simples pasos para comenzar a hacer copy trading con los sistemas MultiEdge.",
+      step1Title: "Abre una Cuenta de Trading",
+      step1Desc: "Regístrate con nuestro broker recomendado Doo Prime para obtener acceso a spreads competitivos y ejecución confiable.",
+      step1Btn: "Abrir Cuenta Doo Prime",
+      brokerDesc: "Regulado • Spreads Bajos • Ejecución Rápida",
+      step2Title: "Conecta a los Sistemas MultiEdge",
+      step2Desc: "Regístrate en nuestra plataforma de copy trading para conectar tu cuenta de broker y comenzar a copiar nuestras estrategias automatizadas.",
+      step2Btn: "Registrarse para Copy Trading",
+      required: "Requerido",
+      then: "luego",
+      disclaimer: "El trading implica un riesgo significativo de pérdida. El rendimiento pasado no garantiza resultados futuros. Solo invierte lo que puedas permitirte perder.",
     },
 
     // FAQ

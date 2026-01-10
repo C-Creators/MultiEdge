@@ -1,0 +1,500 @@
+---
+// Registration Popup Component - 2-step registration flow
+---
+
+<!-- Registration Popup Modal -->
+<div class="register-modal-backdrop" id="registerModal" aria-hidden="true">
+  <div class="register-modal" role="dialog" aria-modal="true" aria-labelledby="registerModalTitle">
+    <div class="register-modal-head">
+      <div class="register-modal-title" id="registerModalTitle">
+        <span class="logo" aria-hidden="true" style="width:34px;height:34px;border-radius:14px;">
+          <i data-lucide="rocket" style="width:16px;height:16px;color:rgba(251,254,250,0.92)"></i>
+        </span>
+        <span data-i18n="register.modalTitle">Get Started with MultiEdge</span>
+      </div>
+      <button class="btn icon-btn" id="closeRegisterModal" aria-label="Close">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="register-modal-body">
+      <p class="register-intro" data-i18n="register.intro">
+        Follow these two simple steps to start copy trading with MultiEdge systems.
+      </p>
+
+      <!-- Step 1: Broker Registration -->
+      <div class="register-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <div class="step-header">
+            <h4 data-i18n="register.step1Title">Open a Trading Account</h4>
+            <span class="step-badge" data-i18n="register.required">Required</span>
+          </div>
+          <p data-i18n="register.step1Desc">
+            Register with our recommended broker Doo Prime to get access to competitive spreads and reliable execution.
+          </p>
+          
+          <div class="broker-card">
+            <div class="broker-logo">
+              <img 
+                src="https://www.dooprime.com/assets/globals/logo-light.svg?v=1761818976" 
+                alt="Doo Prime Logo" 
+                class="broker-logo-light"
+              />
+              <img 
+                src="https://www.dooprime.com/assets/globals/dpmu_hor1_tonal-crest_red-bgupdated.png" 
+                alt="Doo Prime Logo" 
+                class="broker-logo-dark"
+              />
+            </div>
+            <div class="broker-info">
+              <strong>Doo Prime</strong>
+              <span data-i18n="register.brokerDesc">Regulated • Low Spreads • Fast Execution</span>
+            </div>
+          </div>
+
+          <a 
+            class="btn btn-primary step-btn" 
+            href="https://my.dooprime.com/links/go/67353" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <i data-lucide="external-link"></i>
+            <span data-i18n="register.step1Btn">Open Doo Prime Account</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Step Divider -->
+      <div class="step-divider">
+        <div class="divider-line"></div>
+        <span data-i18n="register.then">then</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Step 2: Bot Setup -->
+      <div class="register-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <div class="step-header">
+            <h4 data-i18n="register.step2Title">Connect to MultiEdge Systems</h4>
+            <span class="step-badge" data-i18n="register.required">Required</span>
+          </div>
+          <p data-i18n="register.step2Desc">
+            Register on our copy trading platform to connect your broker account and start copying our automated strategies.
+          </p>
+
+          <a 
+            class="btn btn-primary step-btn" 
+            href="https://my.cgtrade.com/register/?lid=1206&pid=23837" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <i data-lucide="user-plus"></i>
+            <span data-i18n="register.step2Btn">Register for Copy Trading</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="register-disclaimer">
+        <i data-lucide="alert-triangle" style="width:16px;height:16px;flex-shrink:0;"></i>
+        <p data-i18n="register.disclaimer">
+          Trading involves significant risk of loss. Past performance does not guarantee future results. Only invest what you can afford to lose.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .register-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.60);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 100;
+    padding: 16px;
+  }
+
+  .register-modal-backdrop.open {
+    display: flex;
+  }
+
+  .register-modal {
+    width: min(540px, 100%);
+    max-height: min(90vh, 800px);
+    overflow: auto;
+    border-radius: 22px;
+    border: 1px solid var(--stroke2);
+    background: linear-gradient(180deg, var(--card), var(--card2));
+    box-shadow: var(--shadow2);
+    position: relative;
+    animation: modalSlideIn 0.3s var(--ease);
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .register-modal-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.70));
+    border-bottom: 1px solid var(--stroke);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  [data-theme="dark"] .register-modal-head {
+    background: linear-gradient(180deg, rgba(7,12,14,0.90), rgba(7,12,14,0.70));
+  }
+
+  .register-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 950;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .register-modal-body {
+    padding: 20px;
+  }
+
+  .register-intro {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .register-step {
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,0.50);
+  }
+
+  [data-theme="dark"] .register-step {
+    background: rgba(16,25,27,0.50);
+  }
+
+  .step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    color: #fff;
+    font-weight: 950;
+    font-size: 16px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  [data-theme="dark"] .step-number {
+    background: linear-gradient(135deg, rgba(196,233,174,0.90), rgba(142,232,140,0.70));
+    color: rgba(7,12,14,0.92);
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .step-header h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 950;
+    letter-spacing: -0.02em;
+  }
+
+  .step-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(196,233,174,0.25);
+    color: var(--brand2);
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  [data-theme="dark"] .step-badge {
+    background: rgba(196,233,174,0.15);
+    color: rgba(196,233,174,0.95);
+  }
+
+  .step-content p {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.55;
+  }
+
+  .broker-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,0.60);
+    margin-bottom: 14px;
+  }
+
+  [data-theme="dark"] .broker-card {
+    background: rgba(16,25,27,0.60);
+  }
+
+  .broker-logo {
+    width: 100px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .broker-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .broker-logo-light {
+    display: block;
+  }
+
+  .broker-logo-dark {
+    display: none;
+  }
+
+  [data-theme="dark"] .broker-logo-light {
+    display: none;
+  }
+
+  [data-theme="dark"] .broker-logo-dark {
+    display: block;
+  }
+
+  .broker-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .broker-info strong {
+    font-size: 14px;
+    font-weight: 950;
+  }
+
+  .broker-info span {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .step-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .step-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--stroke);
+  }
+
+  .step-divider span {
+    color: var(--muted2);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .register-disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255,180,0,0.10);
+    border: 1px solid rgba(255,180,0,0.25);
+    color: var(--muted);
+  }
+
+  [data-theme="dark"] .register-disclaimer {
+    background: rgba(255,180,0,0.08);
+    border-color: rgba(255,180,0,0.18);
+  }
+
+  .register-disclaimer i {
+    color: rgb(200,150,0);
+    margin-top: 2px;
+  }
+
+  .register-disclaimer p {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 520px) {
+    .register-modal-backdrop {
+      padding: 10px;
+      align-items: flex-end;
+    }
+
+    .register-modal {
+      max-height: 85vh;
+      border-radius: 18px 18px 0 0;
+    }
+
+    .register-modal-head {
+      padding: 14px 16px;
+    }
+
+    .register-modal-title {
+      font-size: 14px;
+    }
+
+    .register-modal-body {
+      padding: 16px;
+    }
+
+    .register-step {
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+
+    .step-header h4 {
+      font-size: 14px;
+    }
+
+    .broker-card {
+      flex-direction: column;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .broker-logo {
+      width: 120px;
+      height: 36px;
+    }
+
+    .broker-info {
+      align-items: center;
+    }
+  }
+</style>
+
+<script>
+  // Register Modal functionality
+  function initRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    const closeBtn = document.getElementById('closeRegisterModal');
+    
+    // Find all CTA buttons that should open the modal
+    const ctaButtons = document.querySelectorAll('[data-open-register]');
+
+    function openModal() {
+      if (!modal) return;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      
+      // Re-initialize Lucide icons for the modal
+      // @ts-ignore
+      if (typeof lucide !== 'undefined') {
+        // @ts-ignore
+        lucide.createIcons();
+      }
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    // Event listeners
+    ctaButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    
+    // Close on backdrop click
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal?.classList.contains('open')) {
+        closeModal();
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRegisterModal);
+  } else {
+    initRegisterModal();
+  }
+</script>
