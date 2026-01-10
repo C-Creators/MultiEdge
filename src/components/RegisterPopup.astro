@@ -137,9 +137,9 @@
     animation: modalSlideIn 0.3s var(--ease);
   }
 
-  [data-theme="dark"] .register-modal {
-    background: linear-gradient(180deg, rgba(16,22,24,0.98), rgba(12,18,20,0.98));
-    border-color: rgba(196,233,174,0.20);
+  :global([data-theme="dark"]) .register-modal {
+    background: linear-gradient(180deg, rgba(14,20,22,0.98), rgba(10,16,18,0.98));
+    border-color: rgba(196,233,174,0.18);
   }
 
   @keyframes modalSlideIn {
@@ -162,14 +162,15 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.70));
+    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.80));
     border-bottom: 1px solid var(--stroke);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
 
-  [data-theme="dark"] .register-modal-head {
-    background: linear-gradient(180deg, rgba(7,12,14,0.90), rgba(7,12,14,0.70));
+  :global([data-theme="dark"]) .register-modal-head {
+    background: linear-gradient(180deg, rgba(20,28,32,0.95), rgba(16,24,28,0.90));
+    border-color: rgba(196,233,174,0.12);
   }
 
   .register-modal-title {
@@ -179,10 +180,19 @@
     font-weight: 950;
     font-size: 16px;
     letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  :global([data-theme="dark"]) .register-modal-title {
+    color: rgba(251,254,250,0.95);
   }
 
   .register-modal-body {
     padding: 20px;
+  }
+
+  :global([data-theme="dark"]) .register-modal-body {
+    background: transparent;
   }
 
   .register-intro {
@@ -194,7 +204,7 @@
     text-align: center;
   }
 
-  [data-theme="dark"] .register-intro {
+  :global([data-theme="dark"]) .register-intro {
     color: rgba(251,254,250,0.72);
   }
 
@@ -204,12 +214,12 @@
     padding: 18px;
     border-radius: 18px;
     border: 1px solid var(--stroke);
-    background: rgba(255,255,255,0.50);
+    background: rgba(255,255,255,0.55);
   }
 
-  [data-theme="dark"] .register-step {
-    background: rgba(30,40,44,0.80);
-    border-color: rgba(196,233,174,0.15);
+  :global([data-theme="dark"]) .register-step {
+    background: rgba(24,32,36,0.85);
+    border-color: rgba(196,233,174,0.12);
   }
 
   .step-number {
@@ -225,7 +235,7 @@
     flex-shrink: 0;
   }
 
-  [data-theme="dark"] .step-number {
+  :global([data-theme="dark"]) .step-number {
     background: linear-gradient(135deg, rgba(196,233,174,0.90), rgba(142,232,140,0.70));
     color: rgba(7,12,14,0.95);
   }
@@ -251,7 +261,7 @@
     color: var(--text);
   }
 
-  [data-theme="dark"] .step-header h4 {
+  :global([data-theme="dark"]) .step-header h4 {
     color: rgba(251,254,250,0.95);
   }
 
@@ -266,8 +276,8 @@
     letter-spacing: 0.05em;
   }
 
-  [data-theme="dark"] .step-badge {
-    background: rgba(196,233,174,0.20);
+  :global([data-theme="dark"]) .step-badge {
+    background: rgba(196,233,174,0.18);
     color: rgba(196,233,174,0.95);
   }
 
@@ -279,7 +289,7 @@
     line-height: 1.55;
   }
 
-  [data-theme="dark"] .step-content p {
+  :global([data-theme="dark"]) .step-content p {
     color: rgba(251,254,250,0.70);
   }
 
@@ -290,13 +300,13 @@
     padding: 12px 14px;
     border-radius: 14px;
     border: 1px solid var(--stroke);
-    background: rgba(255,255,255,0.60);
+    background: rgba(255,255,255,0.65);
     margin-bottom: 14px;
   }
 
-  [data-theme="dark"] .broker-card {
-    background: rgba(20,28,32,0.90);
-    border-color: rgba(196,233,174,0.12);
+  :global([data-theme="dark"]) .broker-card {
+    background: rgba(16,22,26,0.90);
+    border-color: rgba(196,233,174,0.10);
   }
 
   .broker-logo {
@@ -321,11 +331,11 @@
     display: none;
   }
 
-  [data-theme="dark"] .broker-logo-light {
+  :global([data-theme="dark"]) .broker-logo-light {
     display: none;
   }
 
-  [data-theme="dark"] .broker-logo-dark {
+  :global([data-theme="dark"]) .broker-logo-dark {
     display: block;
   }
 
@@ -341,7 +351,7 @@
     color: var(--text);
   }
 
-  [data-theme="dark"] .broker-info strong {
+  :global([data-theme="dark"]) .broker-info strong {
     color: rgba(251,254,250,0.95);
   }
 
@@ -351,7 +361,7 @@
     font-weight: 700;
   }
 
-  [data-theme="dark"] .broker-info span {
+  :global([data-theme="dark"]) .broker-info span {
     color: rgba(251,254,250,0.65);
   }
 
@@ -373,12 +383,20 @@
     background: var(--stroke);
   }
 
+  :global([data-theme="dark"]) .divider-line {
+    background: rgba(196,233,174,0.15);
+  }
+
   .step-divider span {
     color: var(--muted2);
     font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+  }
+
+  :global([data-theme="dark"]) .step-divider span {
+    color: rgba(251,254,250,0.50);
   }
 
   .register-disclaimer {
@@ -393,9 +411,9 @@
     color: var(--muted);
   }
 
-  [data-theme="dark"] .register-disclaimer {
+  :global([data-theme="dark"]) .register-disclaimer {
     background: rgba(255,180,0,0.12);
-    border-color: rgba(255,180,0,0.25);
+    border-color: rgba(255,180,0,0.22);
     color: rgba(251,254,250,0.75);
   }
 
@@ -404,7 +422,7 @@
     margin-top: 2px;
   }
 
-  [data-theme="dark"] .register-disclaimer i {
+  :global([data-theme="dark"]) .register-disclaimer i {
     color: rgb(255,200,60);
   }
 
