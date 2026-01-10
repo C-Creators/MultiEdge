@@ -1,0 +1,66 @@
+---
+interface CardInfo {
+  icon: string;
+  titleKey: string;
+  titleDefault: string;
+  descKey: string;
+  descDefault: string;
+}
+
+const cards: CardInfo[] = [
+  {
+    icon: "history",
+    titleKey: "systems.card1Title",
+    titleDefault: "Historical evaluation",
+    descKey: "systems.card1Desc",
+    descDefault: "Systems are evaluated across historical data to stress-test behavior and risk constraints."
+  },
+  {
+    icon: "rocket",
+    titleKey: "systems.card2Title",
+    titleDefault: "Forward testing",
+    descKey: "systems.card2Desc",
+    descDefault: "We validate strategy behavior in live market conditions to assess operational stability."
+  },
+  {
+    icon: "filter",
+    titleKey: "systems.card3Title",
+    titleDefault: "Risk-adjusted optimization",
+    descKey: "systems.card3Desc",
+    descDefault: "Optimization targets risk-adjusted performance—not raw returns—prioritizing stability over time."
+  }
+];
+---
+
+<section id="systems">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="cpu" style="width:16px;height:16px"></i> <span data-i18n="systems.kicker">AUTOMATED SYSTEMS</span></div>
+        <h3 data-i18n="systems.title">Fully Automated, Rule-Based Execution</h3>
+      </div>
+      <p data-i18n="systems.description">All MultiEdge strategies operate through fully automated execution, eliminating emotional decision-making and discretionary intervention.</p>
+    </div>
+
+    <div class="grid-3">
+      {cards.map(card => (
+        <div class="card reveal">
+          <div class="icon"><i data-lucide={card.icon} style="width:20px;height:20px"></i></div>
+          <h4 data-i18n={card.titleKey}>{card.titleDefault}</h4>
+          <p data-i18n={card.descKey}>{card.descDefault}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="band reveal" style="margin-top:18px;">
+      <div>
+        <h3 data-i18n="systems.bandTitle">Objective: stability, not short-term gains</h3>
+        <p data-i18n="systems.bandDesc">Our objective is not to maximize short-term gains, but to maintain system stability over time with strict controls and transparent rules.</p>
+      </div>
+      <div class="cta">
+        <a class="btn" href="#brokers"><i data-lucide="link-2"></i> <span data-i18n="systems.ctaBroker">Broker Flexibility</span></a>
+        <a class="btn btn-primary" href="#final-cta"><i data-lucide="arrow-right"></i> <span data-i18n="systems.ctaStart">Start with MultiEdge</span></a>
+      </div>
+    </div>
+  </div>
+</section>

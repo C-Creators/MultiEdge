@@ -1,0 +1,1699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MultiEdge — Automated Copy Trading with a Capital Preservation Mandate</title>
+  <meta name="description" content="MultiEdge is a systematic copy trading platform focused on risk-adjusted performance and capital preservation." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- GSAP (smooth animations) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <!-- Icons (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* =========================
+       ChakraUI-like theme tokens (inspired by your palette)
+       ========================= */
+    :root {
+      --bg: #fbfefa;
+      --bg2: #f3f6f3;
+      --card: rgba(255, 255, 255, 0.78);
+      --card2: rgba(255, 255, 255, 0.58);
+      --stroke: rgba(30, 56, 58, 0.12);
+      --stroke2: rgba(30, 56, 58, 0.18);
+
+      --text: #0b1415;
+      --muted: rgba(11, 20, 21, 0.70);
+      --muted2: rgba(11, 20, 21, 0.55);
+
+      --brand: #1e383a;
+      --brand2: #2a4a4d;
+      --accent: #c4e9ae;
+      --accent2: #8ee88c;
+      --blush: #e6dce1;
+
+      --shadow: 0 16px 50px rgba(20, 33, 34, 0.12);
+      --shadow2: 0 14px 40px rgba(20, 33, 34, 0.18);
+
+      --radius-xl: 26px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+
+      --max: 1120px;
+      --grid-gap: 18px;
+
+      --focus: 0 0 0 4px rgba(196, 233, 174, 0.55);
+
+      --navH: 74px;
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #070c0e;
+      --bg2: #0a1214;
+      --card: rgba(16, 25, 27, 0.72);
+      --card2: rgba(16, 25, 27, 0.52);
+      --stroke: rgba(196, 233, 174, 0.16);
+      --stroke2: rgba(196, 233, 174, 0.24);
+
+      --text: rgba(251, 254, 250, 0.92);
+      --muted: rgba(251, 254, 250, 0.72);
+      --muted2: rgba(251, 254, 250, 0.58);
+
+      --brand: #c4e9ae;
+      --brand2: #8ee88c;
+      --accent: #1e383a;
+      --accent2: #2a4a4d;
+      --blush: rgba(230, 220, 225, 0.16);
+
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      --shadow2: 0 18px 70px rgba(0, 0, 0, 0.55);
+
+      --focus: 0 0 0 4px rgba(196, 233, 174, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 600px at 12% 8%, rgba(196, 233, 174, 0.45), transparent 60%),
+        radial-gradient(700px 520px at 88% 18%, rgba(230, 220, 225, 0.55), transparent 62%),
+        radial-gradient(900px 760px at 68% 80%, rgba(30, 56, 58, 0.10), transparent 58%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, a, input { font-family: inherit; }
+    html { scroll-behavior: smooth; }
+
+    .container {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    /* Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--navH);
+      display: flex;
+      align-items: center;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.38));
+      border-bottom: 1px solid var(--stroke);
+    }
+    [data-theme="dark"] .nav {
+      background: linear-gradient(180deg, rgba(7,12,14,0.72), rgba(7,12,14,0.40));
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      width: 100%;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      min-width: 180px;
+    }
+    .logo {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      background:
+        radial-gradient(140% 120% at 30% 20%, rgba(196,233,174,0.95), rgba(196,233,174,0.55) 40%, transparent 70%),
+        linear-gradient(135deg, rgba(30,56,58,0.95), rgba(30,56,58,0.70));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.20);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    [data-theme="dark"] .logo {
+      background:
+        radial-gradient(120% 120% at 30% 20%, rgba(196,233,174,0.75), rgba(196,233,174,0.12) 52%, transparent 72%),
+        linear-gradient(135deg, rgba(196,233,174,0.75), rgba(142,232,140,0.35));
+      border: 1px solid rgba(196,233,174,0.22);
+    }
+    .logo:before {
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 55%);
+      transform: rotate(10deg);
+      opacity: .45;
+      z-index: -1;
+      animation: shimmer 6s var(--ease) infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translate3d(-10%, -8%, 0) rotate(12deg); opacity: .25; }
+      50% { transform: translate3d(10%, 8%, 0) rotate(12deg); opacity: .55; }
+      100% { transform: translate3d(-10%, -8%, 0) rotate(12deg); opacity: .25; }
+    }
+    .brand h1 { font-size: 14px; letter-spacing: 0.12em; margin: 0; font-weight: 900; }
+    .brand span { display:block; font-size: 12px; color: var(--muted); letter-spacing: 0.02em; margin-top: 2px; font-weight: 700; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      justify-content: center;
+      flex: 1;
+    }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+      padding: 10px 10px;
+      border-radius: 12px;
+      transition: transform .2s var(--ease), background .2s var(--ease), color .2s var(--ease);
+    }
+    .nav-links a:hover { background: rgba(196,233,174,0.22); color: var(--text); transform: translateY(-1px); }
+    [data-theme="dark"] .nav-links a:hover { background: rgba(196,233,174,0.12); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 240px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.50));
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 14px;
+      font-weight: 900;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      transition: transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease);
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .btn:active { transform: translateY(0px) scale(0.99); }
+    .btn:focus-visible { outline: none; box-shadow: var(--shadow), var(--focus); }
+
+    [data-theme="dark"] .btn {
+      background: linear-gradient(180deg, rgba(16,25,27,0.76), rgba(16,25,27,0.54));
+      box-shadow: 0 14px 44px rgba(0,0,0,0.40);
+    }
+
+    .btn-primary {
+      border-color: rgba(196,233,174,0.40);
+      background:
+        radial-gradient(120% 120% at 20% 0%, rgba(196,233,174,0.90), rgba(196,233,174,0.45) 40%, transparent 70%),
+        linear-gradient(135deg, rgba(30,56,58,0.95), rgba(30,56,58,0.80));
+      color: #f7fbf7;
+    }
+    [data-theme="dark"] .btn-primary {
+      background:
+        radial-gradient(120% 120% at 18% 0%, rgba(196,233,174,0.90), rgba(196,233,174,0.30) 45%, transparent 70%),
+        linear-gradient(135deg, rgba(196,233,174,0.80), rgba(142,232,140,0.45));
+      color: rgba(7,12,14,0.92);
+      border-color: rgba(196,233,174,0.30);
+    }
+
+    .icon-btn {
+      width: 44px; height: 44px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 14px;
+    }
+
+    /* Mobile drawer */
+    .burger { display: none; }
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.40);
+      z-index: 60;
+      backdrop-filter: blur(10px);
+    }
+    .drawer-panel {
+      position: absolute;
+      right: 0; top: 0;
+      height: 100%;
+      width: min(360px, 92vw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+      border-left: 1px solid var(--stroke);
+      box-shadow: var(--shadow2);
+      padding: 16px;
+      transform: translateX(110%);
+      transition: transform .28s var(--ease);
+    }
+    [data-theme="dark"] .drawer-panel {
+      background: linear-gradient(180deg, rgba(7,12,14,0.92), rgba(7,12,14,0.74));
+    }
+    .mobile-drawer.open { display: block; }
+    .mobile-drawer.open .drawer-panel { transform: translateX(0%); }
+    .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .drawer-links { display: grid; gap: 6px; margin: 12px 0 14px; }
+    .drawer-links a {
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 14px;
+      transition: transform .18s var(--ease), background .18s var(--ease);
+    }
+    .drawer-links a:hover { transform: translateY(-1px); background: rgba(196,233,174,0.18); }
+    .drawer-actions { display: grid; gap: 10px; }
+
+    /* Hero */
+    .hero { padding: 52px 0 24px; position: relative; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.55);
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      font-size: 11px;
+      text-transform: uppercase;
+      width: fit-content;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] .eyebrow { background: rgba(16,25,27,0.58); }
+
+    .hero h2 {
+      font-size: clamp(34px, 5.4vw, 56px);
+      line-height: 1.02;
+      margin: 14px 0 10px;
+      letter-spacing: -0.04em;
+      font-weight: 950;
+    }
+    .hero h2 .grad {
+      background: linear-gradient(135deg, var(--brand), rgba(30,56,58,0.60), rgba(196,233,174,0.95));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    [data-theme="dark"] .hero h2 .grad {
+      background: linear-gradient(135deg, rgba(196,233,174,1), rgba(142,232,140,0.95), rgba(251,254,250,0.85));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 62ch;
+      font-weight: 650;
+    }
+
+    .hero-card {
+      margin-top: 16px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+    .hero-card:before {
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(800px 280px at 15% 0%, rgba(196,233,174,0.35), transparent 60%),
+        radial-gradient(700px 260px at 85% 20%, rgba(230,220,225,0.35), transparent 65%);
+      z-index: -1;
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+    .mini-stats {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+    }
+    .stat {
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 12px 12px;
+      background: rgba(255,255,255,0.60);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.05);
+      min-height: 78px;
+    }
+    [data-theme="dark"] .stat { background: rgba(16,25,27,0.55); }
+    .stat strong { display:block; font-size: 14px; letter-spacing: -0.01em; font-weight: 950; }
+    .stat span { display:block; margin-top: 6px; font-size: 12px; color: var(--muted2); line-height: 1.4; font-weight: 800; }
+
+    /* Right visual */
+    .visual {
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(30,56,58,0.92), rgba(30,56,58,0.70));
+      box-shadow: var(--shadow2);
+      overflow: hidden;
+      position: relative;
+      min-height: 420px;
+    }
+    [data-theme="dark"] .visual {
+      background: linear-gradient(180deg, rgba(16,25,27,0.85), rgba(16,25,27,0.62));
+      border-color: rgba(196,233,174,0.18);
+    }
+    .visual:before {
+      content:"";
+      position:absolute;
+      inset:-30%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(196,233,174,0.85), rgba(196,233,174,0.12) 55%, transparent 70%),
+        radial-gradient(circle at 80% 35%, rgba(230,220,225,0.55), rgba(230,220,225,0.10) 55%, transparent 70%);
+      transform: rotate(12deg);
+      opacity: 0.95;
+    }
+    .visual-inner {
+      position: relative;
+      padding: 18px;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+    .chip-row { display:flex; flex-wrap:wrap; gap: 10px; justify-content: flex-start; margin-top: 2px; }
+    .chip {
+      display:inline-flex; align-items:center; gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.08);
+      color: rgba(251,254,250,0.92);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    [data-theme="dark"] .chip {
+      border-color: rgba(196,233,174,0.18);
+      background: rgba(196,233,174,0.10);
+      color: rgba(251,254,250,0.90);
+    }
+    .mock {
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(7,12,14,0.25);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      overflow: hidden;
+      align-self: stretch;
+      position: relative;
+    }
+    .mock img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(1.05) contrast(1.02); transform: scale(1.02); }
+    .mock-overlay {
+      position:absolute; inset: 0;
+      background:
+        linear-gradient(180deg, rgba(7,12,14,0.10), rgba(7,12,14,0.55)),
+        radial-gradient(900px 420px at 20% 0%, rgba(196,233,174,0.30), transparent 60%);
+      pointer-events:none;
+    }
+    .visual-foot {
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: rgba(251,254,250,0.92);
+      font-weight: 900;
+    }
+    .visual-foot small { display:block; color: rgba(251,254,250,0.72); font-weight: 800; margin-top: 2px; }
+
+    /* Sections */
+    section { padding: 38px 0; }
+    .section-head {
+      display:flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .kicker {
+      display:inline-flex; align-items:center; gap: 8px;
+      font-weight: 950;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .section-head h3 {
+      margin: 0;
+      font-size: clamp(22px, 3.1vw, 34px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      font-weight: 950;
+    }
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 700;
+      max-width: 56ch;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .grid-3 { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+    .grid-2 { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
+
+    .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease);
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--stroke2); }
+    .card .icon {
+      width: 44px; height: 44px;
+      border-radius: 16px;
+      display:grid; place-items:center;
+      background: rgba(196,233,174,0.28);
+      border: 1px solid rgba(196,233,174,0.35);
+      color: var(--brand2);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] .card .icon {
+      background: rgba(196,233,174,0.12);
+      border-color: rgba(196,233,174,0.18);
+      color: rgba(196,233,174,0.92);
+    }
+    .card h4 { margin: 12px 0 6px; font-size: 16px; letter-spacing: -0.02em; font-weight: 950; }
+    .card p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.6; font-weight: 700; }
+
+    .list { margin: 12px 0 0; padding: 0; list-style: none; display:grid; gap: 10px; }
+    .li {
+      display:flex; gap: 10px; align-items: flex-start;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.55);
+      border-radius: 16px;
+      padding: 12px 12px;
+    }
+    [data-theme="dark"] .li { background: rgba(16,25,27,0.52); }
+    .li b { font-weight: 950; font-size: 13px; display:block; margin-bottom: 2px; }
+    .li span { color: var(--muted); font-size: 12.5px; line-height: 1.5; font-weight: 700; display:block; }
+    .li .bullet {
+      width: 34px; height: 34px;
+      border-radius: 14px;
+      background: rgba(196,233,174,0.22);
+      border: 1px solid rgba(196,233,174,0.30);
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+      margin-top: 2px;
+      color: var(--brand2);
+    }
+    [data-theme="dark"] .li .bullet {
+      color: rgba(196,233,174,0.95);
+      background: rgba(196,233,174,0.10);
+      border-color: rgba(196,233,174,0.18);
+    }
+
+    /* Highlight band */
+    .band {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--stroke);
+      background:
+        radial-gradient(900px 420px at 10% 20%, rgba(196,233,174,0.40), transparent 60%),
+        radial-gradient(700px 340px at 85% 40%, rgba(230,220,225,0.55), transparent 62%),
+        linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow);
+      padding: 18px;
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+    .band h3 { margin: 0; font-size: 18px; letter-spacing: -0.02em; font-weight: 950; }
+    .band p { margin: 6px 0 0; color: var(--muted); font-weight: 800; line-height: 1.6; font-size: 13.5px; max-width: 70ch; }
+    .band .cta { display:flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+    /* Bot performance cards (GitHub-dark inspired but integrated) */
+    .bot-wrap {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .bot-head {
+      padding: 18px;
+      border-bottom: 1px solid var(--stroke);
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .bot-head h4 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+    }
+    .bot-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-weight: 750;
+      line-height: 1.55;
+      font-size: 13.5px;
+      max-width: 70ch;
+    }
+    .badge-row { display:flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.52);
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 12px;
+    }
+    [data-theme="dark"] .badge { background: rgba(16,25,27,0.55); }
+    .badge strong { color: var(--text); font-weight: 950; }
+
+    .stats-grid {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      padding: 18px;
+    }
+    .stat-card {
+      border-radius: 18px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.55);
+      padding: 14px 14px;
+      transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+      min-height: 98px;
+    }
+    [data-theme="dark"] .stat-card { background: rgba(16,25,27,0.55); box-shadow: 0 14px 40px rgba(0,0,0,0.35); }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--stroke2); }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+      color: var(--brand2);
+    }
+    [data-theme="dark"] .stat-value { color: rgba(196,233,174,0.95); }
+    .stat-subvalue {
+      margin-top: 6px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .stat-label {
+      margin-top: 8px;
+      color: var(--muted2);
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .bot-foot {
+      padding: 14px 18px 18px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--stroke);
+    }
+    .link {
+      display:inline-flex; align-items:center; gap: 8px;
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.52);
+      transition: transform .18s var(--ease), background .18s var(--ease);
+    }
+    [data-theme="dark"] .link { background: rgba(16,25,27,0.55); }
+    .link:hover { transform: translateY(-1px); background: rgba(196,233,174,0.14); color: var(--text); }
+    .muted-note { color: var(--muted2); font-weight: 800; font-size: 12px; }
+
+    /* FAQ */
+    .faq { display:grid; gap: 12px; }
+    .faq-item {
+      border-radius: 18px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      overflow: hidden;
+      transition: border-color .2s var(--ease), transform .2s var(--ease);
+    }
+    .faq-item:hover { border-color: var(--stroke2); transform: translateY(-1px); }
+    .faq-q {
+      width: 100%;
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 14px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 950;
+      font-size: 14px;
+      text-align: left;
+    }
+    .faq-a {
+      max-height: 0px;
+      overflow: hidden;
+      transition: max-height .28s var(--ease);
+    }
+    .faq-a > div {
+      padding: 0 14px 14px;
+      color: var(--muted);
+      font-weight: 750;
+      line-height: 1.65;
+      font-size: 13.5px;
+    }
+    .chev {
+      width: 36px; height: 36px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      display:grid; place-items:center;
+      background: rgba(255,255,255,0.50);
+      transition: transform .25s var(--ease);
+      flex: 0 0 auto;
+    }
+    [data-theme="dark"] .chev { background: rgba(16,25,27,0.55); }
+    .faq-item.open .chev { transform: rotate(180deg); }
+    .faq-item.open .faq-a { max-height: 220px; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 80;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(920px, 100%);
+      max-height: min(84vh, 900px);
+      overflow: auto;
+      border-radius: 22px;
+      border: 1px solid var(--stroke2);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow2);
+      position: relative;
+    }
+    .modal-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 14px 14px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.55));
+      border-bottom: 1px solid var(--stroke);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    [data-theme="dark"] .modal-head {
+      background: linear-gradient(180deg, rgba(7,12,14,0.85), rgba(7,12,14,0.55));
+    }
+    .modal-title {
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+    }
+    .modal-body { padding: 14px; }
+    .modal-grid {
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    /* Reveal baseline */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s var(--ease), transform .7s var(--ease); will-change: transform, opacity; }
+    .reveal.on { opacity: 1; transform: translateY(0px); }
+
+    /* Footer */
+    footer {
+      padding: 26px 0 40px;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: 13px;
+    }
+    .foot {
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--stroke);
+      padding-top: 16px;
+    }
+    .foot a { color: var(--muted); font-weight: 900; }
+    .foot a:hover { color: var(--text); }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .burger { display: inline-flex; }
+      .nav-actions { min-width: unset; }
+      .mini-stats { grid-template-columns: 1fr; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .band { flex-direction: column; align-items: flex-start; }
+      .band .cta { width: 100%; justify-content: flex-start; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .modal-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .container { width: calc(100% - 28px); }
+      .hero { padding-top: 40px; }
+      .hero-card { padding: 16px; }
+      .visual-inner { padding: 14px; }
+      .btn { padding: 11px 12px; }
+      .brand { min-width: unset; }
+      .brand h1 { font-size: 13px; }
+      .brand span { font-size: 11px; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal, .card, .btn, .nav-links a, .drawer-panel, .faq-a { transition: none !important; }
+      .logo:before { animation: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="top"></div>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile menu">
+      <div class="drawer-head">
+        <div class="brand" style="min-width:unset">
+          <div class="logo" aria-hidden="true">
+            <i data-lucide="layers" style="width:18px;height:18px;color:rgba(251,254,250,0.92)"></i>
+          </div>
+          <div>
+            <h1>MULTIEDGE</h1>
+            <span>Capital Preservation</span>
+          </div>
+        </div>
+        <button class="btn icon-btn" id="closeDrawer" aria-label="Close menu">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="drawer-links">
+        <a href="#about" data-close-drawer>About MultiEdge</a>
+        <a href="#philosophy" data-close-drawer>Investment Philosophy</a>
+        <a href="#systems" data-close-drawer>Automated Systems</a>
+        <a href="#brokers" data-close-drawer>Broker Flexibility</a>
+        <a href="#bot" data-close-drawer>Bot Details</a>
+        <a href="#audience" data-close-drawer>Who It's For</a>
+        <a href="#faq" data-close-drawer>FAQ</a>
+      </div>
+
+      <div class="drawer-actions">
+        <button class="btn" id="drawerThemeBtn">
+          <i data-lucide="sun-moon"></i>
+          Toggle Theme
+        </button>
+        <a class="btn btn-primary" href="#final-cta" data-close-drawer>
+          <i data-lucide="arrow-right"></i>
+          Access MultiEdge Systems
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Bot Details -->
+  <div class="modal-backdrop" id="botModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Bot performance details">
+      <div class="modal-head">
+        <div class="modal-title">
+          <span class="logo" aria-hidden="true" style="width:34px;height:34px;border-radius:14px;">
+            <i data-lucide="bot" style="width:16px;height:16px;color:rgba(251,254,250,0.92)"></i>
+          </span>
+          <span>Bot Performance — Full Overview</span>
+        </div>
+        <button class="btn icon-btn" id="closeBotModal" aria-label="Close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="badge-row" style="margin-bottom:12px;">
+          <span class="badge"><strong>Verified:</strong> Real Account</span>
+          <span class="badge"><strong>Platform:</strong> MetaTrader 5</span>
+          <span class="badge"><strong>Currency:</strong> EUR</span>
+          <span class="badge"><strong>Leverage:</strong> 1:500</span>
+          <span class="badge"><strong>Broker:</strong> Vantage Markets</span>
+          <span class="badge"><strong>Last Update:</strong> ~20 minutes ago</span>
+        </div>
+
+        <div class="modal-grid" id="botModalGrid">
+          <!-- populated by JS -->
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+          <div class="muted-note">
+            Data sourced from public MyFXBook tracking.
+          </div>
+          <a class="btn btn-primary" href="https://www.myfxbook.com/members/TradingShelter/tts-bot/11698349" target="_blank" rel="noopener">
+            <i data-lucide="external-link"></i>
+            View Full Live Stats & Charts
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="Go to top">
+        <div class="logo" aria-hidden="true">
+          <i data-lucide="layers" style="width:18px;height:18px;color:rgba(251,254,250,0.92)"></i>
+        </div>
+        <div>
+          <h1>MULTIEDGE</h1>
+          <span>Copy Trading • Risk-First</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#systems">Systems</a>
+        <a href="#brokers">Brokers</a>
+        <a href="#bot">Bot</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn icon-btn" id="themeBtn" aria-label="Toggle theme">
+          <i data-lucide="sun-moon"></i>
+        </button>
+        <button class="btn burger icon-btn" id="openDrawer" aria-label="Open menu">
+          <i data-lucide="menu"></i>
+        </button>
+        <a class="btn btn-primary" href="#final-cta">
+          <i data-lucide="arrow-right"></i>
+          Access Systems
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="reveal">
+            <div class="eyebrow">
+              <i data-lucide="shield-check" style="width:16px;height:16px"></i>
+              Automated Copy Trading • Capital Preservation Mandate
+            </div>
+
+            <h2>
+              <span class="grad">MultiEdge</span><br/>
+              Systematic copy trading built to protect capital
+            </h2>
+
+            <p>
+              Automated trading systems designed with strict risk controls, low drawdowns, and a long-term capital preservation framework.
+            </p>
+
+            <div class="hero-card">
+              <p style="margin:0; font-weight:900; color:var(--text); letter-spacing:-0.01em;">
+                At MultiEdge, risk management is not a feature.<br/>
+                <span style="color:var(--muted)">It is the foundation of every system we deploy.</span>
+              </p>
+
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#final-cta">
+                  <i data-lucide="sparkles"></i>
+                  Access MultiEdge Systems
+                </a>
+                <a class="btn" href="#about">
+                  <i data-lucide="info"></i>
+                  Learn More
+                </a>
+              </div>
+
+              <div class="mini-stats">
+                <div class="stat">
+                  <strong>Risk Parameters</strong>
+                  <span>Predefined rules before deployment.</span>
+                </div>
+                <div class="stat">
+                  <strong>Rule-Based Execution</strong>
+                  <span>Removes emotion and discretion.</span>
+                </div>
+                <div class="stat">
+                  <strong>Broker-Agnostic</strong>
+                  <span>Connect to compatible copy brokers.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="visual reveal" aria-label="Hero visual">
+            <div class="visual-inner">
+              <div>
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+                  <div>
+                    <div style="font-weight:950;font-size:16px;letter-spacing:-0.02em;color:rgba(251,254,250,0.92);">
+                      Stability over speculation
+                    </div>
+                    <div style="margin-top:6px;color:rgba(251,254,250,0.72);font-weight:800;font-size:13px;line-height:1.5;">
+                      Risk-first architecture. Conservative drawdown profiles. Transparent rules.
+                    </div>
+                  </div>
+                  <div class="chip" title="Capital Preservation">
+                    <i data-lucide="shield" style="width:16px;height:16px"></i>
+                    Preserve
+                  </div>
+                </div>
+
+                <div class="chip-row" style="margin-top:12px;">
+                  <div class="chip"><i data-lucide="settings" style="width:16px;height:16px"></i> Systematic</div>
+                  <div class="chip"><i data-lucide="activity" style="width:16px;height:16px"></i> Drawdown-aware</div>
+                  <div class="chip"><i data-lucide="link" style="width:16px;height:16px"></i> Broker-agnostic</div>
+                </div>
+              </div>
+
+              <div class="mock" aria-hidden="true">
+                <img
+                  alt=""
+                  src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1400&q=80"
+                />
+                <div class="mock-overlay"></div>
+              </div>
+
+              <div class="visual-foot">
+                <div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <i data-lucide="clipboard-check" style="width:18px;height:18px"></i>
+                    <span>Risk controls defined pre-trade</span>
+                  </div>
+                  <small>Position sizing, exposure limits, and drawdown monitoring.</small>
+                </div>
+                <div class="chip" style="border-color:rgba(255,255,255,0.22);">
+                  <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+                  Long-term
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="badge-check" style="width:16px;height:16px"></i> ABOUT MULTIEDGE</div>
+            <h3>What is MultiEdge?</h3>
+          </div>
+          <p>
+            MultiEdge is a systematic copy trading platform focused on risk-adjusted performance and capital preservation.
+            Our automated strategies are designed for disciplined participants who prioritize drawdown control and longevity.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="scale" style="width:20px;height:20px"></i></div>
+            <h4>Risk-adjusted mindset</h4>
+            <p>We design systems that can remain operational across different market regimes—without relying on aggressive exposure.</p>
+          </div>
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="route" style="width:20px;height:20px"></i></div>
+            <h4>Discipline by design</h4>
+            <p>Strategies follow predefined rules. The objective is stability over time, not short-term performance spikes.</p>
+          </div>
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="shield-alert" style="width:20px;height:20px"></i></div>
+            <h4>Drawdowns as a metric</h4>
+            <p>Drawdowns are treated as critical—not a side effect. A system that survives is a system that can compound.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Philosophy -->
+    <section id="philosophy">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="target" style="width:16px;height:16px"></i> INVESTMENT PHILOSOPHY</div>
+            <h3>Our Core Principle: Capital Comes First</h3>
+          </div>
+          <p>Preserving capital is the first objective of any serious trading operation. Growth is only possible when risk is controlled.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card reveal">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <div>
+                <h4 style="margin-top:0">Capital preservation framework</h4>
+                <p>At MultiEdge, every system is structured around explicit constraints that define how risk is taken and managed.</p>
+              </div>
+              <div class="icon" style="background:rgba(230,220,225,0.45);border-color:rgba(230,220,225,0.65)">
+                <i data-lucide="lock" style="width:20px;height:20px"></i>
+              </div>
+            </div>
+
+            <ul class="list">
+              <li class="li">
+                <div class="bullet"><i data-lucide="sliders-horizontal" style="width:16px;height:16px"></i></div>
+                <div><b>Predefined risk parameters</b><span>Rules exist before capital is exposed to the market.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="calculator" style="width:16px;height:16px"></i></div>
+                <div><b>Calculated position sizing</b><span>Position sizing is computed—never discretionary.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="gauge" style="width:16px;height:16px"></i></div>
+                <div><b>Active exposure control</b><span>Exposure is managed continuously, not assumed.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="alert-triangle" style="width:16px;height:16px"></i></div>
+                <div><b>Drawdown is critical</b><span>Managed as a primary KPI—not a side effect.</span></div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card reveal" style="padding:0; overflow:hidden;">
+            <div style="padding:18px;">
+              <h4 style="margin:0 0 6px;">“A system that survives is a system that can compound.”</h4>
+              <p style="margin:0;">MultiEdge systems prioritize longevity and consistency across regimes—built for disciplined participants with a long-term perspective.</p>
+              <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+                <span class="eyebrow" style="margin:0; font-size:10px; padding:9px 12px;">
+                  <i data-lucide="repeat-2" style="width:16px;height:16px"></i> Regime-aware
+                </span>
+                <span class="eyebrow" style="margin:0; font-size:10px; padding:9px 12px;">
+                  <i data-lucide="line-chart" style="width:16px;height:16px"></i> Risk-adjusted
+                </span>
+                <span class="eyebrow" style="margin:0; font-size:10px; padding:9px 12px;">
+                  <i data-lucide="shield-check" style="width:16px;height:16px"></i> Capital-first
+                </span>
+              </div>
+            </div>
+
+            <div style="height:260px; position:relative;">
+              <img
+                alt="Market analysis and risk controls"
+                src="https://images.unsplash.com/photo-1642790553360-97d5d1b2c27c?auto=format&fit=crop&w=1400&q=80"
+                style="width:100%;height:100%;object-fit:cover;display:block;"
+              />
+              <div style="position:absolute; inset:0; background:
+                linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.50)),
+                radial-gradient(900px 380px at 20% 0%, rgba(196,233,174,0.30), transparent 55%);
+              "></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Systems -->
+    <section id="systems">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="cpu" style="width:16px;height:16px"></i> AUTOMATED SYSTEMS</div>
+            <h3>Fully Automated, Rule-Based Execution</h3>
+          </div>
+          <p>All MultiEdge strategies operate through fully automated execution, eliminating emotional decision-making and discretionary intervention.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="history" style="width:20px;height:20px"></i></div>
+            <h4>Historical evaluation</h4>
+            <p>Systems are evaluated across historical data to stress-test behavior and risk constraints.</p>
+          </div>
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="rocket" style="width:20px;height:20px"></i></div>
+            <h4>Forward testing</h4>
+            <p>We validate strategy behavior in live market conditions to assess operational stability.</p>
+          </div>
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="filter" style="width:20px;height:20px"></i></div>
+            <h4>Risk-adjusted optimization</h4>
+            <p>Optimization targets risk-adjusted performance—not raw returns—prioritizing stability over time.</p>
+          </div>
+        </div>
+
+        <div class="band reveal" style="margin-top:18px;">
+          <div>
+            <h3>Objective: stability, not short-term gains</h3>
+            <p>Our objective is not to maximize short-term gains, but to maintain system stability over time with strict controls and transparent rules.</p>
+          </div>
+          <div class="cta">
+            <a class="btn" href="#brokers"><i data-lucide="link-2"></i> Broker Flexibility</a>
+            <a class="btn btn-primary" href="#final-cta"><i data-lucide="arrow-right"></i> Start with MultiEdge</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brokers -->
+    <section id="brokers">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="building-2" style="width:16px;height:16px"></i> BROKER FLEXIBILITY</div>
+            <h3>Broker-Agnostic by Design</h3>
+          </div>
+          <p>
+            MultiEdge systems can be connected to any compatible broker that supports copy trading functionality.
+            We are not affiliated with a single broker.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="unlink" style="width:20px;height:20px"></i></div>
+            <h4>Independence</h4>
+            <p>
+              The choice of broker remains entirely with the user. We recommend large, regulated brokers for operational safety.
+            </p>
+          </div>
+
+          <div class="card reveal">
+            <h4 style="margin-top:0">Recommended institutional standards</h4>
+            <p>For operational and risk reasons, prioritize brokers that meet institutional standards for:</p>
+            <ul class="list">
+              <li class="li">
+                <div class="bullet"><i data-lucide="droplets" style="width:16px;height:16px"></i></div>
+                <div><b>Liquidity</b><span>Consistent liquidity reduces slippage and improves stability.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="zap" style="width:16px;height:16px"></i></div>
+                <div><b>Execution quality</b><span>Reliable fills and robust infrastructure matter under stress.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="shield-check" style="width:16px;height:16px"></i></div>
+                <div><b>Regulatory oversight</b><span>Prefer regulated environments for operational confidence.</span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bot Details (summary + modal) -->
+    <section id="bot">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="bot" style="width:16px;height:16px"></i> BOT DETAILS</div>
+            <h3>Verified performance snapshot</h3>
+          </div>
+          <p>
+            A quick overview of a tracked bot account. View the full set of metrics in one click.
+          </p>
+        </div>
+
+        <div class="bot-wrap reveal">
+          <div class="bot-head">
+            <div>
+              <h4>Bot Performance</h4>
+              <p>Verified Real Account • EUR • MetaTrader 5</p>
+              <div class="badge-row">
+                <span class="badge"><strong>Broker:</strong> Vantage Markets</span>
+                <span class="badge"><strong>Leverage:</strong> 1:500</span>
+                <span class="badge"><strong>Account Type:</strong> Real</span>
+                <span class="badge"><strong>Last Update:</strong> ~20 minutes ago</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+              <button class="btn" id="viewAllBot">
+                <i data-lucide="expand"></i>
+                View all
+              </button>
+              <a class="btn btn-primary" href="https://www.myfxbook.com/members/TradingShelter/tts-bot/11698349" target="_blank" rel="noopener">
+                <i data-lucide="external-link"></i>
+                Live Stats
+              </a>
+            </div>
+          </div>
+
+          <!-- Summary: show a subset -->
+          <div class="stats-grid" id="botSummaryGrid">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="bot-foot">
+            <div class="muted-note">Data sourced from public MyFXBook tracking.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <a class="link" href="#faq"><i data-lucide="help-circle"></i> FAQ</a>
+              <a class="link" href="#final-cta"><i data-lucide="arrow-right"></i> Start with MultiEdge</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Audience -->
+    <section id="audience">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="users" style="width:16px;height:16px"></i> WHO MULTIEDGE IS FOR</div>
+            <h3>Designed for disciplined participants</h3>
+          </div>
+          <p>
+            MultiEdge is for users who understand that capital preservation precedes growth—and who can tolerate market volatility without expecting guarantees.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="check-circle-2" style="width:20px;height:20px"></i></div>
+            <h4>Suitable for</h4>
+            <ul class="list">
+              <li class="li">
+                <div class="bullet"><i data-lucide="briefcase" style="width:16px;height:16px"></i></div>
+                <div><b>Investors</b><span>Seeking systematic exposure with controlled risk.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="bar-chart-3" style="width:16px;height:16px"></i></div>
+                <div><b>Drawdown-aware traders</b><span>Who value risk management as the primary objective.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="hourglass" style="width:16px;height:16px"></i></div>
+                <div><b>Long-term participants</b><span>Focused on longevity over short-term speculation.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet"><i data-lucide="shield" style="width:16px;height:16px"></i></div>
+                <div><b>Capital-first mindset</b><span>Preservation precedes growth.</span></div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card reveal">
+            <div class="icon" style="background:rgba(230,220,225,0.45);border-color:rgba(230,220,225,0.65)">
+              <i data-lucide="x-circle" style="width:20px;height:20px"></i>
+            </div>
+            <h4>Not suitable for</h4>
+            <ul class="list">
+              <li class="li">
+                <div class="bullet" style="background:rgba(230,220,225,0.40);border-color:rgba(230,220,225,0.55)">
+                  <i data-lucide="flame" style="width:16px;height:16px"></i>
+                </div>
+                <div><b>High-risk speculative trading</b><span>We do not pursue aggressive exposure.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet" style="background:rgba(230,220,225,0.40);border-color:rgba(230,220,225,0.55)">
+                  <i data-lucide="timer" style="width:16px;height:16px"></i>
+                </div>
+                <div><b>Short-term profit chasing</b><span>We optimize for stability and discipline.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet" style="background:rgba(230,220,225,0.40);border-color:rgba(230,220,225,0.55)">
+                  <i data-lucide="badge-dollar-sign" style="width:16px;height:16px"></i>
+                </div>
+                <div><b>Guaranteed / fixed returns</b><span>No returns are guaranteed in trading.</span></div>
+              </li>
+              <li class="li">
+                <div class="bullet" style="background:rgba(230,220,225,0.40);border-color:rgba(230,220,225,0.55)">
+                  <i data-lucide="waves" style="width:16px;height:16px"></i>
+                </div>
+                <div><b>Zero volatility tolerance</b><span>Markets fluctuate; drawdowns can occur.</span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="shield-check" style="width:20px;height:20px"></i></div>
+            <h4>Risk-first architecture</h4>
+            <p>We treat copy trading as a risk management tool, not a shortcut.</p>
+          </div>
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="eye" style="width:20px;height:20px"></i></div>
+            <h4>Transparent rules</h4>
+            <p>Rules-based strategies designed for clarity and repeatability.</p>
+          </div>
+          <div class="card reveal">
+            <div class="icon"><i data-lucide="building" style="width:20px;height:20px"></i></div>
+            <h4>Institutional mindset</h4>
+            <p>Applied to copy trading with conservative drawdown profiles and controlled exposure.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section id="final-cta">
+      <div class="container">
+        <div class="band reveal">
+          <div>
+            <div class="kicker" style="margin-bottom:6px;"><i data-lucide="sparkles" style="width:16px;height:16px"></i> FINAL CTA</div>
+            <h3>Professional systems. Controlled risk. Long-term perspective.</h3>
+            <p>Start with MultiEdge.</p>
+          </div>
+          <div class="cta">
+            <a class="btn" href="#faq"><i data-lucide="help-circle"></i> Read FAQ</a>
+            <a class="btn btn-primary" href="#top" id="ctaTop">
+              <i data-lucide="arrow-right"></i>
+              Access MultiEdge Systems
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker"><i data-lucide="help-circle" style="width:16px;height:16px"></i> FAQ</div>
+            <h3>Frequently Asked Questions</h3>
+          </div>
+          <p>Trading involves risk. MultiEdge provides technology and strategies, not brokerage services or personalized financial advice.</p>
+        </div>
+
+        <div class="faq">
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              What is copy trading?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              Copy trading allows users to replicate the trades of automated or managed strategies in their own brokerage account, proportional to their account size.
+            </div></div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              Are returns guaranteed?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              No. Trading involves risk, and no returns are guaranteed. Past performance does not guarantee future results.
+            </div></div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              What markets do MultiEdge systems trade?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              Markets may include forex, indices, commodities, or other liquid instruments, depending on the specific strategy.
+            </div></div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              What makes MultiEdge different from other copy trading platforms?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              Our primary focus is capital preservation and drawdown control, not aggressive return targets.
+            </div></div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              Can I use any broker?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              Yes. Any broker compatible with copy trading may be used. We recommend large, regulated brokers for operational safety.
+            </div></div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              Can I stop copying at any time?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              Yes. Users maintain full control of their accounts and can disconnect from any system at their discretion.
+            </div></div>
+          </div>
+
+          <div class="faq-item reveal">
+            <button class="faq-q" type="button">
+              Is MultiEdge a broker or financial advisor?
+              <span class="chev"><i data-lucide="chevron-down"></i></span>
+            </button>
+            <div class="faq-a"><div>
+              No. MultiEdge is a technology and strategy provider. We do not hold client funds or provide personalized financial advice.
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="foot">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="logo" aria-hidden="true" style="width:34px;height:34px;border-radius:14px;">
+              <i data-lucide="layers" style="width:16px;height:16px;color:rgba(251,254,250,0.92)"></i>
+            </div>
+            <div>
+              <div style="font-weight:950; letter-spacing:0.10em; font-size:12px;">MULTIEDGE</div>
+              <div>© <span id="year"></span> MultiEdge. All rights reserved.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;flex-wrap:wrap;">
+            <a href="#top">Top</a>
+            <a href="#faq">FAQ</a>
+            <a href="#bot">Bot</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Icons
+    lucide.createIcons();
+
+    // Theme persisted
+    const root = document.documentElement;
+    const THEME_KEY = "multiedge_theme";
+    const stored = localStorage.getItem(THEME_KEY);
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    function setTheme(mode) {
+      root.setAttribute("data-theme", mode);
+      localStorage.setItem(THEME_KEY, mode);
+      const isDark = mode === "dark";
+      document.getElementById("themeBtn").setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+    }
+    setTheme(stored || (prefersDark ? "dark" : "light"));
+
+    function toggleTheme() {
+      const cur = root.getAttribute("data-theme") || "light";
+      setTheme(cur === "dark" ? "light" : "dark");
+    }
+    document.getElementById("themeBtn").addEventListener("click", toggleTheme);
+    document.getElementById("drawerThemeBtn").addEventListener("click", toggleTheme);
+
+    // Drawer
+    const drawer = document.getElementById("drawer");
+    const openDrawer = document.getElementById("openDrawer");
+    const closeDrawer = document.getElementById("closeDrawer");
+    const closeOnLinks = document.querySelectorAll("[data-close-drawer]");
+    function setDrawer(open) {
+      if (open) {
+        drawer.classList.add("open");
+        drawer.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      } else {
+        drawer.classList.remove("open");
+        drawer.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+    }
+    openDrawer?.addEventListener("click", () => setDrawer(true));
+    closeDrawer?.addEventListener("click", () => setDrawer(false));
+    drawer.addEventListener("click", (e) => { if (e.target === drawer) setDrawer(false); });
+    closeOnLinks.forEach(a => a.addEventListener("click", () => setDrawer(false)));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") setDrawer(false); });
+
+    // FAQ accordion
+    document.querySelectorAll(".faq-item").forEach((item) => {
+      const btn = item.querySelector(".faq-q");
+      btn.addEventListener("click", () => {
+        const isOpen = item.classList.contains("open");
+        document.querySelectorAll(".faq-item.open").forEach(i => i.classList.remove("open"));
+        if (!isOpen) item.classList.add("open");
+      });
+    });
+
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) en.target.classList.add("on"); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+    // GSAP polish
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.from(".hero .eyebrow", { y: 10, opacity: 0, duration: 0.7, ease: "power2.out", delay: 0.05 });
+    gsap.from(".hero h2", { y: 14, opacity: 0, duration: 0.85, ease: "power2.out", delay: 0.10 });
+    gsap.from(".hero p", { y: 10, opacity: 0, duration: 0.8, ease: "power2.out", delay: 0.15 });
+    gsap.from(".hero-card", { y: 12, opacity: 0, duration: 0.9, ease: "power2.out", delay: 0.20 });
+    gsap.from(".visual", { y: 14, opacity: 0, duration: 0.95, ease: "power2.out", delay: 0.22 });
+    gsap.to(".mock img", {
+      yPercent: -6,
+      ease: "none",
+      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+    });
+
+    // CTA micro interaction
+    const ctaTop = document.getElementById("ctaTop");
+    ctaTop.addEventListener("mousemove", (e) => {
+      const r = ctaTop.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      ctaTop.style.transform = `translateY(-1px) rotateX(${(0.5 - y) * 3}deg) rotateY(${(x - 0.5) * 3}deg)`;
+    });
+    ctaTop.addEventListener("mouseleave", () => { ctaTop.style.transform = ""; });
+
+    // Bot metrics (your provided details)
+    const botMetrics = [
+      { label: "Absolute Gain", value: "+264.40%" },
+      { label: "Total Profit", value: "€13,218.95" },
+      { label: "Max Drawdown", value: "5.46%" },
+      { label: "Current Balance / Equity", value: "€18,218.95", sub: "(Equity = Balance • 100.00%)" },
+      { label: "Total Trades", value: "770" },
+      { label: "Total Pips", value: "67,578.7" },
+      { label: "Profit Factor", value: "3.93" },
+      { label: "Win Rate", value: "~78%", sub: "(Longs: 77% • Shorts: 78%)" },
+      { label: "Sharpe Ratio", value: "0.47" },
+      { label: "Expectancy", value: "87.8 pips / €17.17" },
+      { label: "Avg. Win", value: "143.08 pips / €29.65" },
+      { label: "Avg. Loss", value: "-104.55 pips / -€26.25" },
+    ];
+
+    // Summary subset (show only a few, not all)
+    const summaryLabels = new Set(["Absolute Gain", "Max Drawdown", "Profit Factor", "Win Rate", "Total Trades", "Current Balance / Equity"]);
+    const summary = botMetrics.filter(m => summaryLabels.has(m.label));
+
+    function renderMetricCard(m) {
+      return `
+        <div class="stat-card">
+          <div class="stat-value">${m.value}</div>
+          ${m.sub ? `<div class="stat-subvalue">${m.sub}</div>` : ``}
+          <div class="stat-label">${m.label}</div>
+        </div>
+      `;
+    }
+
+    document.getElementById("botSummaryGrid").innerHTML = summary.map(renderMetricCard).join("");
+
+    // Modal grid: all metrics
+    document.getElementById("botModalGrid").innerHTML = botMetrics.map(renderMetricCard).join("");
+
+    // Modal behavior
+    const modalBackdrop = document.getElementById("botModal");
+    const openModalBtn = document.getElementById("viewAllBot");
+    const closeModalBtn = document.getElementById("closeBotModal");
+
+    function setModal(open) {
+      if (open) {
+        modalBackdrop.classList.add("open");
+        modalBackdrop.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        // focus close button for accessibility
+        setTimeout(() => closeModalBtn.focus(), 0);
+      } else {
+        modalBackdrop.classList.remove("open");
+        modalBackdrop.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        openModalBtn.focus();
+      }
+    }
+
+    openModalBtn.addEventListener("click", () => setModal(true));
+    closeModalBtn.addEventListener("click", () => setModal(false));
+    modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) setModal(false); });
+
+    // Close on ESC (also closes modal first)
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (modalBackdrop.classList.contains("open")) setModal(false);
+      }
+    });
+  </script>
+</body>
+</html>

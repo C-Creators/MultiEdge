@@ -1,0 +1,79 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Philosophy from '../components/Philosophy.astro';
+import Systems from '../components/Systems.astro';
+import Brokers from '../components/Brokers.astro';
+import BotDetails from '../components/BotDetails.astro';
+import Audience from '../components/Audience.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+import FAQ from '../components/FAQ.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="MultiEdge — Automated Copy Trading with a Capital Preservation Mandate">
+  <div id="top"></div>
+  
+  <Navbar />
+  
+  <main>
+    <Hero />
+    <About />
+    <Philosophy />
+    <Systems />
+    <Brokers />
+    <BotDetails />
+    <Audience />
+    <FinalCTA />
+    <FAQ />
+    <Footer />
+  </main>
+</Layout>
+
+<script>
+  // Initialize Lucide icons after page load
+  document.addEventListener('DOMContentLoaded', () => {
+    // @ts-ignore
+    if (typeof lucide !== 'undefined') {
+      // @ts-ignore
+      lucide.createIcons();
+    }
+  });
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => { 
+      if (en.isIntersecting) en.target.classList.add("on"); 
+    });
+  }, { threshold: 0.12 });
+  
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  // GSAP polish animations
+  document.addEventListener('DOMContentLoaded', () => {
+    // @ts-ignore
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      // @ts-ignore
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // @ts-ignore
+      gsap.from(".hero .eyebrow", { y: 10, opacity: 0, duration: 0.7, ease: "power2.out", delay: 0.05 });
+      // @ts-ignore
+      gsap.from(".hero h2", { y: 14, opacity: 0, duration: 0.85, ease: "power2.out", delay: 0.10 });
+      // @ts-ignore
+      gsap.from(".hero p", { y: 10, opacity: 0, duration: 0.8, ease: "power2.out", delay: 0.15 });
+      // @ts-ignore
+      gsap.from(".hero-card", { y: 12, opacity: 0, duration: 0.9, ease: "power2.out", delay: 0.20 });
+      // @ts-ignore
+      gsap.from(".visual", { y: 14, opacity: 0, duration: 0.95, ease: "power2.out", delay: 0.22 });
+      // @ts-ignore
+      gsap.to(".mock img", {
+        yPercent: -6,
+        ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+      });
+    }
+  });
+</script>

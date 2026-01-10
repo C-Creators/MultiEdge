@@ -1,0 +1,37 @@
+---
+---
+
+<section id="final-cta">
+  <div class="container">
+    <div class="band reveal">
+      <div>
+        <div class="kicker" style="margin-bottom:6px;"><i data-lucide="sparkles" style="width:16px;height:16px"></i> <span data-i18n="finalCta.kicker">FINAL CTA</span></div>
+        <h3 data-i18n="finalCta.title">Professional systems. Controlled risk. Long-term perspective.</h3>
+        <p data-i18n="finalCta.subtitle">Start with MultiEdge.</p>
+      </div>
+      <div class="cta">
+        <a class="btn" href="#faq"><i data-lucide="help-circle"></i> <span data-i18n="finalCta.readFaq">Read FAQ</span></a>
+        <a class="btn btn-primary" href="#top" id="ctaTop">
+          <i data-lucide="arrow-right"></i>
+          <span data-i18n="finalCta.accessSystems">Access MultiEdge Systems</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // CTA micro interaction
+  const ctaTop = document.getElementById("ctaTop");
+  
+  ctaTop?.addEventListener("mousemove", (e) => {
+    const r = ctaTop.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    ctaTop.style.transform = `translateY(-1px) rotateX(${(0.5 - y) * 3}deg) rotateY(${(x - 0.5) * 3}deg)`;
+  });
+  
+  ctaTop?.addEventListener("mouseleave", () => { 
+    ctaTop.style.transform = ""; 
+  });
+</script>

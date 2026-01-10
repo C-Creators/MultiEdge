@@ -1,0 +1,105 @@
+---
+interface ListItem {
+  icon: string;
+  titleKey: string;
+  titleDefault: string;
+  descKey: string;
+  descDefault: string;
+}
+
+const listItems: ListItem[] = [
+  {
+    icon: "sliders-horizontal",
+    titleKey: "philosophy.item1Title",
+    titleDefault: "Predefined risk parameters",
+    descKey: "philosophy.item1Desc",
+    descDefault: "Rules exist before capital is exposed to the market."
+  },
+  {
+    icon: "calculator",
+    titleKey: "philosophy.item2Title",
+    titleDefault: "Calculated position sizing",
+    descKey: "philosophy.item2Desc",
+    descDefault: "Position sizing is computed—never discretionary."
+  },
+  {
+    icon: "gauge",
+    titleKey: "philosophy.item3Title",
+    titleDefault: "Active exposure control",
+    descKey: "philosophy.item3Desc",
+    descDefault: "Exposure is managed continuously, not assumed."
+  },
+  {
+    icon: "alert-triangle",
+    titleKey: "philosophy.item4Title",
+    titleDefault: "Drawdown is critical",
+    descKey: "philosophy.item4Desc",
+    descDefault: "Managed as a primary KPI—not a side effect."
+  }
+];
+---
+
+<section id="philosophy">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="target" style="width:16px;height:16px"></i> <span data-i18n="philosophy.kicker">INVESTMENT PHILOSOPHY</span></div>
+        <h3 data-i18n="philosophy.title">Our Core Principle: Capital Comes First</h3>
+      </div>
+      <p data-i18n="philosophy.description">Preserving capital is the first objective of any serious trading operation. Growth is only possible when risk is controlled.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card reveal">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <h4 style="margin-top:0" data-i18n="philosophy.frameworkTitle">Capital preservation framework</h4>
+            <p data-i18n="philosophy.frameworkDesc">At MultiEdge, every system is structured around explicit constraints that define how risk is taken and managed.</p>
+          </div>
+          <div class="icon" style="background:rgba(230,220,225,0.45);border-color:rgba(230,220,225,0.65)">
+            <i data-lucide="lock" style="width:20px;height:20px"></i>
+          </div>
+        </div>
+
+        <ul class="list">
+          {listItems.map(item => (
+            <li class="li">
+              <div class="bullet"><i data-lucide={item.icon} style="width:16px;height:16px"></i></div>
+              <div><b data-i18n={item.titleKey}>{item.titleDefault}</b><span data-i18n={item.descKey}>{item.descDefault}</span></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="card reveal" style="padding:0; overflow:hidden;">
+        <div style="padding:18px;">
+          <h4 style="margin:0 0 6px;" data-i18n="philosophy.quoteTitle">"A system that survives is a system that can compound."</h4>
+          <p style="margin:0;" data-i18n="philosophy.quoteDesc">MultiEdge systems prioritize longevity and consistency across regimes—built for disciplined participants with a long-term perspective.</p>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+            <span class="eyebrow" style="margin:0; font-size:10px; padding:9px 12px;">
+              <i data-lucide="repeat-2" style="width:16px;height:16px"></i> <span data-i18n="philosophy.tagRegime">Regime-aware</span>
+            </span>
+            <span class="eyebrow" style="margin:0; font-size:10px; padding:9px 12px;">
+              <i data-lucide="line-chart" style="width:16px;height:16px"></i> <span data-i18n="philosophy.tagRisk">Risk-adjusted</span>
+            </span>
+            <span class="eyebrow" style="margin:0; font-size:10px; padding:9px 12px;">
+              <i data-lucide="shield-check" style="width:16px;height:16px"></i> <span data-i18n="philosophy.tagCapital">Capital-first</span>
+            </span>
+          </div>
+        </div>
+
+        <div style="height:260px; position:relative;">
+          <img
+            alt="Market analysis and risk controls"
+            src="https://images.unsplash.com/photo-1642790553360-97d5d1b2c27c?auto=format&fit=crop&w=1400&q=80"
+            style="width:100%;height:100%;object-fit:cover;display:block;"
+          />
+          <div style="position:absolute; inset:0; background:
+            linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.50)),
+            radial-gradient(900px 380px at 20% 0%, rgba(196,233,174,0.30), transparent 55%);
+          "></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="logo" aria-hidden="true" style="width:34px;height:34px;border-radius:14px;">
+          <i data-lucide="layers" style="width:16px;height:16px;color:rgba(251,254,250,0.92)"></i>
+        </div>
+        <div>
+          <div style="font-weight:950; letter-spacing:0.10em; font-size:12px;">MULTIEDGE</div>
+          <div data-i18n="footer.copyright">© {currentYear} MultiEdge. All rights reserved.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <a href="#top" data-i18n="footer.top">Top</a>
+        <a href="#faq" data-i18n="footer.faq">FAQ</a>
+        <a href="#bot" data-i18n="footer.bot">Bot</a>
+      </div>
+    </div>
+  </div>
+</footer>

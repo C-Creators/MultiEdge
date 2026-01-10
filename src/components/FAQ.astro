@@ -1,0 +1,91 @@
+---
+interface FAQItem {
+  questionKey: string;
+  questionDefault: string;
+  answerKey: string;
+  answerDefault: string;
+}
+
+const faqItems: FAQItem[] = [
+  {
+    questionKey: "faq.q1",
+    questionDefault: "What is copy trading?",
+    answerKey: "faq.a1",
+    answerDefault: "Copy trading allows users to replicate the trades of automated or managed strategies in their own brokerage account, proportional to their account size."
+  },
+  {
+    questionKey: "faq.q2",
+    questionDefault: "Are returns guaranteed?",
+    answerKey: "faq.a2",
+    answerDefault: "No. Trading involves risk, and no returns are guaranteed. Past performance does not guarantee future results."
+  },
+  {
+    questionKey: "faq.q3",
+    questionDefault: "What markets do MultiEdge systems trade?",
+    answerKey: "faq.a3",
+    answerDefault: "Markets may include forex, indices, commodities, or other liquid instruments, depending on the specific strategy."
+  },
+  {
+    questionKey: "faq.q4",
+    questionDefault: "What makes MultiEdge different from other copy trading platforms?",
+    answerKey: "faq.a4",
+    answerDefault: "Our primary focus is capital preservation and drawdown control, not aggressive return targets."
+  },
+  {
+    questionKey: "faq.q5",
+    questionDefault: "Can I use any broker?",
+    answerKey: "faq.a5",
+    answerDefault: "Yes. Any broker compatible with copy trading may be used. We recommend large, regulated brokers for operational safety."
+  },
+  {
+    questionKey: "faq.q6",
+    questionDefault: "Can I stop copying at any time?",
+    answerKey: "faq.a6",
+    answerDefault: "Yes. Users maintain full control of their accounts and can disconnect from any system at their discretion."
+  },
+  {
+    questionKey: "faq.q7",
+    questionDefault: "Is MultiEdge a broker or financial advisor?",
+    answerKey: "faq.a7",
+    answerDefault: "No. MultiEdge is a technology and strategy provider. We do not hold client funds or provide personalized financial advice."
+  }
+];
+---
+
+<section id="faq">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="help-circle" style="width:16px;height:16px"></i> <span data-i18n="faq.kicker">FAQ</span></div>
+        <h3 data-i18n="faq.title">Frequently Asked Questions</h3>
+      </div>
+      <p data-i18n="faq.description">Trading involves risk. MultiEdge provides technology and strategies, not brokerage services or personalized financial advice.</p>
+    </div>
+
+    <div class="faq">
+      {faqItems.map((item) => (
+        <div class="faq-item reveal">
+          <button class="faq-q" type="button">
+            <span data-i18n={item.questionKey}>{item.questionDefault}</span>
+            <span class="chev"><i data-lucide="chevron-down"></i></span>
+          </button>
+          <div class="faq-a"><div data-i18n={item.answerKey}>
+            {item.answerDefault}
+          </div></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  // FAQ accordion
+  document.querySelectorAll(".faq-item").forEach((item) => {
+    const btn = item.querySelector(".faq-q");
+    btn?.addEventListener("click", () => {
+      const isOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item.open").forEach(i => i.classList.remove("open"));
+      if (!isOpen) item.classList.add("open");
+    });
+  });
+</script>

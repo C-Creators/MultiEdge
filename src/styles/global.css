@@ -1,0 +1,716 @@
+/* =========================
+   ChakraUI-like theme tokens (inspired by your palette)
+   ========================= */
+:root {
+  --bg: #fbfefa;
+  --bg2: #f3f6f3;
+  --card: rgba(255, 255, 255, 0.78);
+  --card2: rgba(255, 255, 255, 0.58);
+  --stroke: rgba(30, 56, 58, 0.12);
+  --stroke2: rgba(30, 56, 58, 0.18);
+
+  --text: #0b1415;
+  --muted: rgba(11, 20, 21, 0.70);
+  --muted2: rgba(11, 20, 21, 0.55);
+
+  --brand: #1e383a;
+  --brand2: #2a4a4d;
+  --accent: #c4e9ae;
+  --accent2: #8ee88c;
+  --blush: #e6dce1;
+
+  --shadow: 0 16px 50px rgba(20, 33, 34, 0.12);
+  --shadow2: 0 14px 40px rgba(20, 33, 34, 0.18);
+
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+
+  --max: 1120px;
+  --grid-gap: 18px;
+
+  --focus: 0 0 0 4px rgba(196, 233, 174, 0.55);
+
+  --navH: 74px;
+  --ease: cubic-bezier(.2,.9,.2,1);
+}
+
+[data-theme="dark"] {
+  --bg: #070c0e;
+  --bg2: #0a1214;
+  --card: rgba(16, 25, 27, 0.72);
+  --card2: rgba(16, 25, 27, 0.52);
+  --stroke: rgba(196, 233, 174, 0.16);
+  --stroke2: rgba(196, 233, 174, 0.24);
+
+  --text: rgba(251, 254, 250, 0.92);
+  --muted: rgba(251, 254, 250, 0.72);
+  --muted2: rgba(251, 254, 250, 0.58);
+
+  --brand: #c4e9ae;
+  --brand2: #8ee88c;
+  --accent: #1e383a;
+  --accent2: #2a4a4d;
+  --blush: rgba(230, 220, 225, 0.16);
+
+  --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+  --shadow2: 0 18px 70px rgba(0, 0, 0, 0.55);
+
+  --focus: 0 0 0 4px rgba(196, 233, 174, 0.28);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  overflow-x: hidden;
+}
+
+/* Fixed gradient background overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 5%, rgba(196, 233, 174, 0.40), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(230, 220, 225, 0.45), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(30, 56, 58, 0.08), transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  pointer-events: none;
+}
+
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 5%, rgba(196, 233, 174, 0.15), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(142, 232, 140, 0.10), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(196, 233, 174, 0.05), transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+}
+a { color: inherit; text-decoration: none; }
+button, a, input { font-family: inherit; }
+html { scroll-behavior: smooth; }
+
+.container {
+  width: min(var(--max), calc(100% - 40px));
+  margin: 0 auto;
+}
+
+/* Reveal baseline */
+.reveal { 
+  opacity: 0; 
+  transform: translateY(14px); 
+  transition: opacity .7s var(--ease), transform .7s var(--ease); 
+  will-change: transform, opacity; 
+}
+.reveal.on { 
+  opacity: 1; 
+  transform: translateY(0px); 
+}
+
+/* =========================
+   RESPONSIVE BREAKPOINTS
+   Mobile-first approach
+   Common screen sizes:
+   - 320px: Small phones (iPhone SE)
+   - 375px: Medium phones (iPhone X/11/12/13)
+   - 414px: Large phones (iPhone Plus/Max)
+   - 768px: Tablets
+   - 980px: Small laptops
+   - 1024px+: Desktops
+   ========================= */
+
+/* Tablet and below (max-width: 980px) */
+@media (max-width: 980px) {
+  :root {
+    --navH: 64px;
+    --grid-gap: 14px;
+  }
+
+  .hero-grid { 
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  
+  .nav-links { display: none; }
+  .burger { display: inline-flex; }
+  .nav-actions { min-width: unset; }
+  
+  .mini-stats { 
+    grid-template-columns: repeat(2, minmax(0,1fr)); 
+  }
+  
+  .grid-3, .grid-2 { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .band { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    text-align: left;
+  }
+  
+  .band .cta { 
+    width: 100%; 
+    justify-content: flex-start; 
+  }
+  
+  .stats-grid { 
+    grid-template-columns: repeat(2, minmax(0,1fr)); 
+  }
+  
+  .modal-grid { 
+    grid-template-columns: repeat(2, minmax(0,1fr)); 
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .section-head p {
+    max-width: 100%;
+  }
+
+  /* Visual panel on tablet - show after content */
+  .visual {
+    min-height: 320px;
+    order: 2;
+  }
+
+  .bot-head {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .bot-head > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .foot {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+}
+
+/* Large phones and below (max-width: 768px) */
+@media (max-width: 768px) {
+  section {
+    padding: 28px 0;
+  }
+
+  .hero {
+    padding: 28px 0 20px;
+  }
+
+  .hero h2 {
+    font-size: clamp(26px, 7vw, 38px);
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  /* Mini stats - 1 column on phones */
+  .mini-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .stat {
+    min-height: auto;
+    padding: 12px;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 18px;
+  }
+
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 12px;
+    min-height: 85px;
+  }
+
+  .badge-row {
+    gap: 6px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+
+  /* Visual panel - smaller on phones */
+  .visual {
+    min-height: 280px;
+  }
+
+  .visual-inner {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .visual-foot {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  /* Hide the long-term chip on mobile to save space */
+  .visual-foot .chip {
+    display: none;
+  }
+
+  .drawer-panel {
+    width: min(320px, 88vw);
+  }
+
+  /* Chip row - wrap better on mobile */
+  .chip-row {
+    gap: 6px;
+  }
+
+  .chip {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}
+
+/* Medium phones and below (max-width: 520px) */
+@media (max-width: 520px) {
+  :root {
+    --radius-xl: 18px;
+    --radius-lg: 14px;
+    --radius-md: 10px;
+    --navH: 60px;
+  }
+
+  .container { 
+    width: calc(100% - 24px); 
+  }
+  
+  .hero { 
+    padding-top: 24px; 
+  }
+
+  .hero h2 {
+    font-size: clamp(24px, 6.5vw, 32px);
+    line-height: 1.1;
+  }
+
+  .hero p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  
+  .hero-card { 
+    padding: 14px; 
+  }
+
+  .hero-card p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Hero actions - stack buttons */
+  .hero-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Visual panel - compact on small phones */
+  .visual {
+    min-height: 240px;
+  }
+
+  .visual-inner { 
+    padding: 12px;
+    gap: 8px;
+  }
+
+  /* Hide mock image on small screens to save space */
+  .mock {
+    display: none;
+  }
+
+  /* Adjust visual content for no image */
+  .visual-inner {
+    grid-template-rows: auto auto;
+  }
+
+  .chip {
+    font-size: 10px;
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .chip i {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  
+  .btn { 
+    padding: 10px 12px; 
+    font-size: 12px;
+  }
+  
+  .brand { 
+    min-width: unset; 
+  }
+  
+  .brand h1 { 
+    font-size: 12px; 
+  }
+  
+  .brand span { 
+    font-size: 10px; 
+  }
+  
+  .stats-grid { 
+    grid-template-columns: 1fr; 
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .nav-inner {
+    padding: 0 12px;
+  }
+
+  .logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .card h4 {
+    font-size: 15px;
+  }
+
+  .card p {
+    font-size: 13px;
+  }
+
+  .section-head h3 {
+    font-size: clamp(20px, 5vw, 26px);
+  }
+
+  .section-head p {
+    font-size: 13px;
+  }
+
+  .band {
+    padding: 14px;
+  }
+
+  .band h3 {
+    font-size: 16px;
+  }
+
+  .band p {
+    font-size: 13px;
+  }
+
+  .bot-wrap {
+    border-radius: var(--radius-lg);
+  }
+
+  .bot-head {
+    padding: 14px;
+  }
+
+  .bot-head h4 {
+    font-size: 16px;
+  }
+
+  .bot-head p {
+    font-size: 12px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .stat-subvalue {
+    font-size: 11px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .faq-q {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .faq-a > div {
+    padding: 0 12px 12px;
+    font-size: 12.5px;
+  }
+
+  .chev {
+    width: 32px;
+    height: 32px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+
+  .kicker {
+    font-size: 11px;
+  }
+
+  .li {
+    padding: 10px;
+  }
+
+  .li b {
+    font-size: 12px;
+  }
+
+  .li span {
+    font-size: 11.5px;
+  }
+
+  .li .bullet {
+    width: 30px;
+    height: 30px;
+  }
+
+  footer {
+    padding: 20px 0 30px;
+    font-size: 12px;
+  }
+
+  /* Mini stats compact */
+  .stat {
+    padding: 10px;
+    min-height: auto;
+  }
+
+  .stat strong {
+    font-size: 13px;
+  }
+
+  .stat span {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+}
+
+/* Small phones (max-width: 375px) - iPhone SE, older phones */
+@media (max-width: 375px) {
+  .container {
+    width: calc(100% - 20px);
+  }
+
+  .hero h2 {
+    font-size: 22px;
+  }
+
+  .hero p {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .btn {
+    padding: 9px 10px;
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .brand h1 {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .modal-head {
+    padding: 12px;
+  }
+
+  .modal-title {
+    font-size: 14px;
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 5px 7px;
+  }
+
+  .visual {
+    min-height: 200px;
+  }
+
+  .section-head h3 {
+    font-size: 18px;
+  }
+
+  .card .icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* Simplify chip-row on very small screens */
+  .chip-row {
+    flex-wrap: wrap;
+  }
+
+  .chip-row .chip:nth-child(n+3) {
+    display: none;
+  }
+
+  /* Eyebrow text truncation */
+  .eyebrow span {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Very small phones (max-width: 320px) */
+@media (max-width: 320px) {
+  :root {
+    --navH: 56px;
+  }
+
+  .container {
+    width: calc(100% - 16px);
+  }
+
+  .hero h2 {
+    font-size: 24px;
+  }
+
+  .logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+  }
+
+  .nav-actions .btn:not(.icon-btn) span {
+    display: none;
+  }
+
+  .nav-actions .btn:not(.icon-btn) {
+    padding: 10px;
+  }
+
+  .band .cta {
+    flex-direction: column;
+  }
+
+  .band .cta .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  section {
+    padding: 22px 0;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover,
+  .card:hover,
+  .stat-card:hover,
+  .faq-item:hover,
+  .nav-links a:hover,
+  .link:hover,
+  .drawer-links a:hover {
+    transform: none;
+  }
+
+  /* Larger touch targets */
+  .btn {
+    min-height: 44px;
+  }
+
+  .icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .faq-q {
+    min-height: 48px;
+  }
+
+  .nav-links a {
+    padding: 12px 12px;
+  }
+}
+
+/* Landscape phone orientation */
+@media (max-width: 812px) and (orientation: landscape) {
+  .hero {
+    padding: 24px 0 16px;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .visual {
+    min-height: 280px;
+  }
+
+  .modal {
+    max-height: 85vh;
+  }
+
+  section {
+    padding: 24px 0;
+  }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .logo,
+  .card .icon,
+  .li .bullet {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .card, .btn, .nav-links a, .drawer-panel, .faq-a { transition: none !important; }
+  .logo:before { animation: none !important; }
+}

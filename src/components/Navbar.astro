@@ -1,0 +1,153 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+
+interface NavLink {
+  href: string;
+  label: string;
+  i18nKey: string;
+}
+
+const navLinks: NavLink[] = [
+  { href: "#about", label: "About", i18nKey: "nav.about" },
+  { href: "#philosophy", label: "Philosophy", i18nKey: "nav.philosophy" },
+  { href: "#systems", label: "Systems", i18nKey: "nav.systems" },
+  { href: "#brokers", label: "Brokers", i18nKey: "nav.brokers" },
+  { href: "#bot", label: "Bot", i18nKey: "nav.bot" },
+  { href: "#faq", label: "FAQ", i18nKey: "nav.faq" },
+];
+
+const drawerLinks: NavLink[] = [
+  { href: "#about", label: "About MultiEdge", i18nKey: "drawer.about" },
+  { href: "#philosophy", label: "Investment Philosophy", i18nKey: "drawer.philosophy" },
+  { href: "#systems", label: "Automated Systems", i18nKey: "drawer.systems" },
+  { href: "#brokers", label: "Broker Flexibility", i18nKey: "drawer.brokers" },
+  { href: "#bot", label: "Bot Details", i18nKey: "drawer.bot" },
+  { href: "#audience", label: "Who It's For", i18nKey: "drawer.audience" },
+  { href: "#faq", label: "FAQ", i18nKey: "drawer.faq" },
+];
+---
+
+<!-- Mobile Drawer -->
+<div class="mobile-drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile menu">
+    <div class="drawer-head">
+      <div class="brand" style="min-width:unset">
+        <div class="logo" aria-hidden="true">
+          <i data-lucide="layers" style="width:18px;height:18px;color:rgba(251,254,250,0.92)"></i>
+        </div>
+        <div>
+          <h1>MULTIEDGE</h1>
+          <span data-i18n="nav.brandTaglineDrawer">Capital Preservation</span>
+        </div>
+      </div>
+      <button class="btn icon-btn" id="closeDrawer" aria-label="Close menu" data-i18n-aria-label="nav.closeMenu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="drawer-links">
+      {drawerLinks.map(link => (
+        <a href={link.href} data-close-drawer data-i18n={link.i18nKey}>{link.label}</a>
+      ))}
+    </div>
+
+    <div class="drawer-actions">
+      <button class="btn" id="drawerThemeBtn">
+        <i data-lucide="sun-moon"></i>
+        <span data-i18n="nav.toggleTheme">Toggle Theme</span>
+      </button>
+      <a class="btn btn-primary" href="#final-cta" data-close-drawer>
+        <i data-lucide="arrow-right"></i>
+        <span data-i18n="drawer.accessSystems">Access MultiEdge Systems</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top" aria-label="Go to top">
+      <div class="logo" aria-hidden="true">
+        <i data-lucide="layers" style="width:18px;height:18px;color:rgba(251,254,250,0.92)"></i>
+      </div>
+      <div>
+        <h1>MULTIEDGE</h1>
+        <span data-i18n="nav.brandTagline">Copy Trading • Risk-First</span>
+      </div>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      {navLinks.map(link => (
+        <a href={link.href} data-i18n={link.i18nKey}>{link.label}</a>
+      ))}
+    </nav>
+
+    <div class="nav-actions">
+      <LanguageSwitcher />
+      <button class="btn icon-btn" id="themeBtn" aria-label="Toggle theme" data-i18n-aria-label="nav.toggleTheme">
+        <i data-lucide="sun-moon"></i>
+      </button>
+      <button class="btn burger icon-btn" id="openDrawer" aria-label="Open menu" data-i18n-aria-label="nav.openMenu">
+        <i data-lucide="menu"></i>
+      </button>
+      <a class="btn btn-primary" href="#final-cta">
+        <i data-lucide="arrow-right"></i>
+        <span data-i18n="nav.accessSystems">Access Systems</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Theme persisted
+  const root = document.documentElement;
+  const THEME_KEY = "multiedge_theme";
+  const stored = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  function setTheme(mode: string) {
+    root.setAttribute("data-theme", mode);
+    localStorage.setItem(THEME_KEY, mode);
+    const isDark = mode === "dark";
+    const themeBtn = document.getElementById("themeBtn");
+    if (themeBtn) {
+      themeBtn.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+    }
+  }
+  
+  setTheme(stored || (prefersDark ? "dark" : "light"));
+
+  function toggleTheme() {
+    const cur = root.getAttribute("data-theme") || "light";
+    setTheme(cur === "dark" ? "light" : "dark");
+  }
+
+  document.getElementById("themeBtn")?.addEventListener("click", toggleTheme);
+  document.getElementById("drawerThemeBtn")?.addEventListener("click", toggleTheme);
+
+  // Drawer
+  const drawer = document.getElementById("drawer");
+  const openDrawer = document.getElementById("openDrawer");
+  const closeDrawer = document.getElementById("closeDrawer");
+  const closeOnLinks = document.querySelectorAll("[data-close-drawer]");
+
+  function setDrawer(open: boolean) {
+    if (!drawer) return;
+    if (open) {
+      drawer.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    } else {
+      drawer.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+  }
+
+  openDrawer?.addEventListener("click", () => setDrawer(true));
+  closeDrawer?.addEventListener("click", () => setDrawer(false));
+  drawer?.addEventListener("click", (e) => { if (e.target === drawer) setDrawer(false); });
+  closeOnLinks.forEach(a => a.addEventListener("click", () => setDrawer(false)));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") setDrawer(false); });
+</script>

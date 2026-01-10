@@ -1,0 +1,164 @@
+---
+interface ListItem {
+  icon: string;
+  titleKey: string;
+  titleDefault: string;
+  descKey: string;
+  descDefault: string;
+  altStyle?: boolean;
+}
+
+const suitableFor: ListItem[] = [
+  {
+    icon: "briefcase",
+    titleKey: "audience.suitable1Title",
+    titleDefault: "Investors",
+    descKey: "audience.suitable1Desc",
+    descDefault: "Seeking systematic exposure with controlled risk."
+  },
+  {
+    icon: "bar-chart-3",
+    titleKey: "audience.suitable2Title",
+    titleDefault: "Drawdown-aware traders",
+    descKey: "audience.suitable2Desc",
+    descDefault: "Who value risk management as the primary objective."
+  },
+  {
+    icon: "hourglass",
+    titleKey: "audience.suitable3Title",
+    titleDefault: "Long-term participants",
+    descKey: "audience.suitable3Desc",
+    descDefault: "Focused on longevity over short-term speculation."
+  },
+  {
+    icon: "shield",
+    titleKey: "audience.suitable4Title",
+    titleDefault: "Capital-first mindset",
+    descKey: "audience.suitable4Desc",
+    descDefault: "Preservation precedes growth."
+  }
+];
+
+const notSuitableFor: ListItem[] = [
+  {
+    icon: "flame",
+    titleKey: "audience.notSuitable1Title",
+    titleDefault: "High-risk speculative trading",
+    descKey: "audience.notSuitable1Desc",
+    descDefault: "We do not pursue aggressive exposure.",
+    altStyle: true
+  },
+  {
+    icon: "timer",
+    titleKey: "audience.notSuitable2Title",
+    titleDefault: "Short-term profit chasing",
+    descKey: "audience.notSuitable2Desc",
+    descDefault: "We optimize for stability and discipline.",
+    altStyle: true
+  },
+  {
+    icon: "badge-dollar-sign",
+    titleKey: "audience.notSuitable3Title",
+    titleDefault: "Guaranteed / fixed returns",
+    descKey: "audience.notSuitable3Desc",
+    descDefault: "No returns are guaranteed in trading.",
+    altStyle: true
+  },
+  {
+    icon: "waves",
+    titleKey: "audience.notSuitable4Title",
+    titleDefault: "Zero volatility tolerance",
+    descKey: "audience.notSuitable4Desc",
+    descDefault: "Markets fluctuate; drawdowns can occur.",
+    altStyle: true
+  }
+];
+
+interface CardInfo {
+  icon: string;
+  titleKey: string;
+  titleDefault: string;
+  descKey: string;
+  descDefault: string;
+}
+
+const bottomCards: CardInfo[] = [
+  {
+    icon: "shield-check",
+    titleKey: "audience.bottomCard1Title",
+    titleDefault: "Risk-first architecture",
+    descKey: "audience.bottomCard1Desc",
+    descDefault: "We treat copy trading as a risk management tool, not a shortcut."
+  },
+  {
+    icon: "eye",
+    titleKey: "audience.bottomCard2Title",
+    titleDefault: "Transparent rules",
+    descKey: "audience.bottomCard2Desc",
+    descDefault: "Rules-based strategies designed for clarity and repeatability."
+  },
+  {
+    icon: "building",
+    titleKey: "audience.bottomCard3Title",
+    titleDefault: "Institutional mindset",
+    descKey: "audience.bottomCard3Desc",
+    descDefault: "Applied to copy trading with conservative drawdown profiles and controlled exposure."
+  }
+];
+---
+
+<section id="audience">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="users" style="width:16px;height:16px"></i> <span data-i18n="audience.kicker">WHO MULTIEDGE IS FOR</span></div>
+        <h3 data-i18n="audience.title">Designed for disciplined participants</h3>
+      </div>
+      <p data-i18n="audience.description">
+        MultiEdge is for users who understand that capital preservation precedes growth—and who can tolerate market volatility without expecting guarantees.
+      </p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card reveal">
+        <div class="icon"><i data-lucide="check-circle-2" style="width:20px;height:20px"></i></div>
+        <h4 data-i18n="audience.suitableTitle">Suitable for</h4>
+        <ul class="list">
+          {suitableFor.map(item => (
+            <li class="li">
+              <div class="bullet"><i data-lucide={item.icon} style="width:16px;height:16px"></i></div>
+              <div><b data-i18n={item.titleKey}>{item.titleDefault}</b><span data-i18n={item.descKey}>{item.descDefault}</span></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon" style="background:rgba(230,220,225,0.45);border-color:rgba(230,220,225,0.65)">
+          <i data-lucide="x-circle" style="width:20px;height:20px"></i>
+        </div>
+        <h4 data-i18n="audience.notSuitableTitle">Not suitable for</h4>
+        <ul class="list">
+          {notSuitableFor.map(item => (
+            <li class="li">
+              <div class="bullet" style="background:rgba(230,220,225,0.40);border-color:rgba(230,220,225,0.55)">
+                <i data-lucide={item.icon} style="width:16px;height:16px"></i>
+              </div>
+              <div><b data-i18n={item.titleKey}>{item.titleDefault}</b><span data-i18n={item.descKey}>{item.descDefault}</span></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:18px;">
+      {bottomCards.map(card => (
+        <div class="card reveal">
+          <div class="icon"><i data-lucide={card.icon} style="width:20px;height:20px"></i></div>
+          <h4 data-i18n={card.titleKey}>{card.titleDefault}</h4>
+          <p data-i18n={card.descKey}>{card.descDefault}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

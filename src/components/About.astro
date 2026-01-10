@@ -1,0 +1,58 @@
+---
+interface CardInfo {
+  icon: string;
+  titleKey: string;
+  titleDefault: string;
+  descKey: string;
+  descDefault: string;
+}
+
+const cards: CardInfo[] = [
+  {
+    icon: "scale",
+    titleKey: "about.card1Title",
+    titleDefault: "Risk-adjusted mindset",
+    descKey: "about.card1Desc",
+    descDefault: "We design systems that can remain operational across different market regimes—without relying on aggressive exposure."
+  },
+  {
+    icon: "route",
+    titleKey: "about.card2Title",
+    titleDefault: "Discipline by design",
+    descKey: "about.card2Desc",
+    descDefault: "Strategies follow predefined rules. The objective is stability over time, not short-term performance spikes."
+  },
+  {
+    icon: "shield-alert",
+    titleKey: "about.card3Title",
+    titleDefault: "Drawdowns as a metric",
+    descKey: "about.card3Desc",
+    descDefault: "Drawdowns are treated as critical—not a side effect. A system that survives is a system that can compound."
+  }
+];
+---
+
+<section id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="badge-check" style="width:16px;height:16px"></i> <span data-i18n="about.kicker">ABOUT MULTIEDGE</span></div>
+        <h3 data-i18n="about.title">What is MultiEdge?</h3>
+      </div>
+      <p data-i18n="about.description">
+        MultiEdge is a systematic copy trading platform focused on risk-adjusted performance and capital preservation.
+        Our automated strategies are designed for disciplined participants who prioritize drawdown control and longevity.
+      </p>
+    </div>
+
+    <div class="grid-3">
+      {cards.map(card => (
+        <div class="card reveal">
+          <div class="icon"><i data-lucide={card.icon} style="width:20px;height:20px"></i></div>
+          <h4 data-i18n={card.titleKey}>{card.titleDefault}</h4>
+          <p data-i18n={card.descKey}>{card.descDefault}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

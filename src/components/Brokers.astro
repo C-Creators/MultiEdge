@@ -1,0 +1,71 @@
+---
+interface ListItem {
+  icon: string;
+  titleKey: string;
+  titleDefault: string;
+  descKey: string;
+  descDefault: string;
+}
+
+const standards: ListItem[] = [
+  {
+    icon: "droplets",
+    titleKey: "brokers.item1Title",
+    titleDefault: "Liquidity",
+    descKey: "brokers.item1Desc",
+    descDefault: "Consistent liquidity reduces slippage and improves stability."
+  },
+  {
+    icon: "zap",
+    titleKey: "brokers.item2Title",
+    titleDefault: "Execution quality",
+    descKey: "brokers.item2Desc",
+    descDefault: "Reliable fills and robust infrastructure matter under stress."
+  },
+  {
+    icon: "shield-check",
+    titleKey: "brokers.item3Title",
+    titleDefault: "Regulatory oversight",
+    descKey: "brokers.item3Desc",
+    descDefault: "Prefer regulated environments for operational confidence."
+  }
+];
+---
+
+<section id="brokers">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="building-2" style="width:16px;height:16px"></i> <span data-i18n="brokers.kicker">BROKER FLEXIBILITY</span></div>
+        <h3 data-i18n="brokers.title">Broker-Agnostic by Design</h3>
+      </div>
+      <p data-i18n="brokers.description">
+        MultiEdge systems can be connected to any compatible broker that supports copy trading functionality.
+        We are not affiliated with a single broker.
+      </p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card reveal">
+        <div class="icon"><i data-lucide="unlink" style="width:20px;height:20px"></i></div>
+        <h4 data-i18n="brokers.independenceTitle">Independence</h4>
+        <p data-i18n="brokers.independenceDesc">
+          The choice of broker remains entirely with the user. We recommend large, regulated brokers for operational safety.
+        </p>
+      </div>
+
+      <div class="card reveal">
+        <h4 style="margin-top:0" data-i18n="brokers.standardsTitle">Recommended institutional standards</h4>
+        <p data-i18n="brokers.standardsDesc">For operational and risk reasons, prioritize brokers that meet institutional standards for:</p>
+        <ul class="list">
+          {standards.map(item => (
+            <li class="li">
+              <div class="bullet"><i data-lucide={item.icon} style="width:16px;height:16px"></i></div>
+              <div><b data-i18n={item.titleKey}>{item.titleDefault}</b><span data-i18n={item.descKey}>{item.descDefault}</span></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

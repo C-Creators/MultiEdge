@@ -1,0 +1,85 @@
+---
+import { translations } from '../i18n/translations';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "MultiEdge is a systematic copy trading platform focused on risk-adjusted performance and capital preservation." } = Astro.props;
+
+// Serialize translations for client-side use
+const translationsJSON = JSON.stringify(translations);
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- GSAP (smooth animations) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <!-- Icons (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Language Detection (before paint) -->
+  <script is:inline define:vars={{ translationsJSON }}>
+    // Make translations globally available
+    window.__TRANSLATIONS__ = JSON.parse(translationsJSON);
+    
+    // Detect and set language before paint
+    (function() {
+      const STORAGE_KEY = 'multiedge-lang';
+      const storedLang = localStorage.getItem(STORAGE_KEY);
+      let currentLang;
+      
+      // Priority: stored user preference > browser language
+      if (storedLang && (storedLang === 'en' || storedLang === 'es')) {
+        currentLang = storedLang;
+      } else {
+        const browserLang = navigator.language.toLowerCase();
+        currentLang = browserLang.startsWith('es') ? 'es' : 'en';
+        localStorage.setItem(STORAGE_KEY, currentLang);
+      }
+      
+      document.documentElement.setAttribute('data-lang', currentLang);
+      document.documentElement.setAttribute('lang', currentLang);
+    })();
+  </script>
+</head>
+
+<body>
+  <slot />
+
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', () => {
+      // @ts-ignore
+      if (typeof lucide !== 'undefined') {
+        // @ts-ignore
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+  @import '../styles/nav.css';
+  @import '../styles/buttons.css';
+  @import '../styles/hero.css';
+  @import '../styles/sections.css';
+  @import '../styles/components.css';
+</style>

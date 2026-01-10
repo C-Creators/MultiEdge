@@ -1,0 +1,159 @@
+---
+interface Metric {
+  label: string;
+  labelKey: string;
+  value: string;
+  sub?: string;
+}
+
+const botMetrics: Metric[] = [
+  { label: "Absolute Gain", labelKey: "bot.metricGain", value: "+264.40%" },
+  { label: "Total Profit", labelKey: "bot.metricProfit", value: "€13,218.95" },
+  { label: "Max Drawdown", labelKey: "bot.metricDrawdown", value: "5.46%" },
+  { label: "Current Balance / Equity", labelKey: "bot.metricBalance", value: "€18,218.95", sub: "(Equity = Balance • 100.00%)" },
+  { label: "Total Trades", labelKey: "bot.metricTrades", value: "770" },
+  { label: "Total Pips", labelKey: "bot.metricPips", value: "67,578.7" },
+  { label: "Profit Factor", labelKey: "bot.metricFactor", value: "3.93" },
+  { label: "Win Rate", labelKey: "bot.metricWinRate", value: "~78%", sub: "(Longs: 77% • Shorts: 78%)" },
+  { label: "Sharpe Ratio", labelKey: "bot.metricSharpe", value: "0.47" },
+  { label: "Expectancy", labelKey: "bot.metricExpectancy", value: "87.8 pips / €17.17" },
+  { label: "Avg. Win", labelKey: "bot.metricAvgWin", value: "143.08 pips / €29.65" },
+  { label: "Avg. Loss", labelKey: "bot.metricAvgLoss", value: "-104.55 pips / -€26.25" },
+];
+
+const summaryLabels = ["Absolute Gain", "Max Drawdown", "Profit Factor", "Win Rate", "Total Trades", "Current Balance / Equity"];
+const summaryMetrics = botMetrics.filter(m => summaryLabels.includes(m.label));
+---
+
+<!-- Modal: Bot Details -->
+<div class="modal-backdrop" id="botModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Bot performance details">
+    <div class="modal-head">
+      <div class="modal-title">
+        <span class="logo" aria-hidden="true" style="width:34px;height:34px;border-radius:14px;">
+          <i data-lucide="bot" style="width:16px;height:16px;color:rgba(251,254,250,0.92)"></i>
+        </span>
+        <span data-i18n="bot.modalTitle">Bot Performance — Full Overview</span>
+      </div>
+      <button class="btn icon-btn" id="closeBotModal" aria-label="Close">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="badge-row" style="margin-bottom:12px;">
+        <span class="badge"><strong data-i18n="bot.badgeVerified">Verified:</strong> Real Account</span>
+        <span class="badge"><strong data-i18n="bot.badgePlatform">Platform:</strong> MetaTrader 5</span>
+        <span class="badge"><strong data-i18n="bot.badgeCurrency">Currency:</strong> EUR</span>
+        <span class="badge"><strong data-i18n="bot.badgeLeverage">Leverage:</strong> 1:500</span>
+        <span class="badge"><strong data-i18n="bot.badgeBroker">Broker:</strong> Vantage Markets</span>
+        <span class="badge"><strong data-i18n="bot.badgeUpdate">Last Update:</strong> <span data-i18n="bot.badgeUpdateValue">~20 minutes ago</span></span>
+      </div>
+
+      <div class="modal-grid" id="botModalGrid">
+        {botMetrics.map(metric => (
+          <div class="stat-card">
+            <div class="stat-value">{metric.value}</div>
+            {metric.sub && <div class="stat-subvalue">{metric.sub}</div>}
+            <div class="stat-label" data-i18n={metric.labelKey}>{metric.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+        <div class="muted-note" data-i18n="bot.dataNote">
+          Data sourced from public MyFXBook tracking.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="bot">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="kicker"><i data-lucide="bot" style="width:16px;height:16px"></i> <span data-i18n="bot.kicker">BOT DETAILS</span></div>
+        <h3 data-i18n="bot.title">Verified performance snapshot</h3>
+      </div>
+      <p data-i18n="bot.description">
+        A quick overview of a tracked bot account. View the full set of metrics in one click.
+      </p>
+    </div>
+
+    <div class="bot-wrap reveal">
+      <div class="bot-head">
+        <div>
+          <h4 data-i18n="bot.perfTitle">Bot Performance</h4>
+          <p data-i18n="bot.perfDesc">Verified Real Account • EUR • MetaTrader 5</p>
+          <div class="badge-row">
+            <span class="badge"><strong data-i18n="bot.badgeBroker">Broker:</strong> Vantage Markets</span>
+            <span class="badge"><strong data-i18n="bot.badgeLeverage">Leverage:</strong> 1:500</span>
+            <span class="badge"><strong data-i18n="bot.badgeType">Account Type:</strong> <span data-i18n="bot.badgeTypeValue">Real</span></span>
+            <span class="badge"><strong data-i18n="bot.badgeUpdate">Last Update:</strong> <span data-i18n="bot.badgeUpdateValue">~20 minutes ago</span></span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+          <button class="btn" id="viewAllBot">
+            <i data-lucide="expand"></i>
+            <span data-i18n="bot.viewAll">View all</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary: show a subset -->
+      <div class="stats-grid" id="botSummaryGrid">
+        {summaryMetrics.map(metric => (
+          <div class="stat-card">
+            <div class="stat-value">{metric.value}</div>
+            {metric.sub && <div class="stat-subvalue">{metric.sub}</div>}
+            <div class="stat-label" data-i18n={metric.labelKey}>{metric.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div class="bot-foot">
+        <div class="muted-note" data-i18n="bot.dataNote">Data sourced from public MyFXBook tracking.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a class="link" href="#faq"><i data-lucide="help-circle"></i> <span data-i18n="bot.faqLink">FAQ</span></a>
+          <a class="link" href="#final-cta"><i data-lucide="arrow-right"></i> <span data-i18n="bot.startLink">Start with MultiEdge</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Modal behavior
+  const modalBackdrop = document.getElementById("botModal");
+  const openModalBtn = document.getElementById("viewAllBot");
+  const closeModalBtn = document.getElementById("closeBotModal");
+
+  function setModal(open: boolean) {
+    if (!modalBackdrop || !openModalBtn || !closeModalBtn) return;
+    
+    if (open) {
+      modalBackdrop.classList.add("open");
+      modalBackdrop.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      // focus close button for accessibility
+      setTimeout(() => closeModalBtn.focus(), 0);
+    } else {
+      modalBackdrop.classList.remove("open");
+      modalBackdrop.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      openModalBtn.focus();
+    }
+  }
+
+  openModalBtn?.addEventListener("click", () => setModal(true));
+  closeModalBtn?.addEventListener("click", () => setModal(false));
+  modalBackdrop?.addEventListener("click", (e) => { if (e.target === modalBackdrop) setModal(false); });
+
+  // Close on ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modalBackdrop?.classList.contains("open")) {
+      setModal(false);
+    }
+  });
+</script>
