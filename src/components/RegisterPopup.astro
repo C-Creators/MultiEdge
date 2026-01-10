@@ -31,10 +31,21 @@
             <span class="step-badge" data-i18n="register.required">Required</span>
           </div>
           <p data-i18n="register.step1Desc">
-            Register with our recommended broker Doo Prime to get access to competitive spreads and reliable execution.
+            Register with one of our recommended brokers to get access to competitive spreads and reliable execution.
           </p>
           
-          <div class="broker-card">
+          <!-- Broker Toggle -->
+          <div class="broker-toggle">
+            <button class="broker-toggle-btn active" data-broker="dooprime">
+              <span>Doo Prime</span>
+            </button>
+            <button class="broker-toggle-btn" data-broker="cgtrade">
+              <span>CGTrade <small data-i18n="register.usClients">(US Clients)</small></span>
+            </button>
+          </div>
+
+          <!-- Doo Prime Broker Card -->
+          <div class="broker-card" id="broker-dooprime">
             <div class="broker-logo">
               <img 
                 src="https://www.dooprime.com/assets/globals/logo-light.svg?v=1761818976" 
@@ -49,18 +60,50 @@
             </div>
             <div class="broker-info">
               <strong>Doo Prime</strong>
-              <span data-i18n="register.brokerDesc">Regulated • Low Spreads • Fast Execution</span>
+              <span data-i18n="register.brokerDescDooprime">Regulated • Low Spreads • Fast Execution</span>
+            </div>
+          </div>
+
+          <!-- CGTrade Broker Card -->
+          <div class="broker-card hidden" id="broker-cgtrade">
+            <div class="broker-logo">
+              <img 
+                src="https://my.cgtrade.com/uploads/public/assets/2024/10/15/56a73ecfb183cefa7a50efa2a5957ae6.png" 
+                alt="CGTrade Logo" 
+                class="broker-logo-light"
+              />
+              <img 
+                src="https://www.cgtrade.com/_next/static/media/cg-fintech-logo.98505826.png?w=640&q=80" 
+                alt="CGTrade Logo" 
+                class="broker-logo-dark"
+              />
+            </div>
+            <div class="broker-info">
+              <strong>CGTrade</strong>
+              <span data-i18n="register.brokerDescCgtrade">Copy Trading Platform • Easy Setup</span>
             </div>
           </div>
 
           <a 
             class="btn btn-primary step-btn" 
+            id="broker-btn-dooprime"
             href="https://my.dooprime.com/links/go/67353" 
             target="_blank" 
             rel="noopener noreferrer"
           >
             <i data-lucide="external-link"></i>
-            <span data-i18n="register.step1Btn">Open Doo Prime Account</span>
+            <span data-i18n="register.step1BtnDooprime">Open Doo Prime Account</span>
+          </a>
+
+          <a 
+            class="btn btn-primary step-btn hidden" 
+            id="broker-btn-cgtrade"
+            href="https://my.cgtrade.com/links/go/919" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <i data-lucide="external-link"></i>
+            <span data-i18n="register.step1BtnCgtrade">Open CGTrade Account</span>
           </a>
         </div>
       </div>
@@ -293,6 +336,65 @@
     color: rgba(251,254,250,0.70);
   }
 
+  /* Broker Toggle */
+  .broker-toggle {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 12px;
+    margin-bottom: 14px;
+  }
+
+  :global([data-theme="dark"]) .broker-toggle {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .broker-toggle-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+
+  .broker-toggle-btn:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.5);
+  }
+
+  :global([data-theme="dark"]) .broker-toggle-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(251,254,250,0.85);
+  }
+
+  .broker-toggle-btn.active {
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  :global([data-theme="dark"]) .broker-toggle-btn.active {
+    background: rgba(196,233,174,0.15);
+    color: rgba(196,233,174,0.95);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .broker-toggle-btn small {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
   .broker-card {
     display: flex;
     align-items: center;
@@ -499,6 +601,13 @@
     // Find all CTA buttons that should open the modal
     const ctaButtons = document.querySelectorAll('[data-open-register]');
 
+    // Broker toggle elements
+    const brokerToggleBtns = document.querySelectorAll('.broker-toggle-btn');
+    const brokerCardDooprime = document.getElementById('broker-dooprime');
+    const brokerCardCgtrade = document.getElementById('broker-cgtrade');
+    const brokerBtnDooprime = document.getElementById('broker-btn-dooprime');
+    const brokerBtnCgtrade = document.getElementById('broker-btn-cgtrade');
+
     function openModal() {
       if (!modal) return;
       modal.classList.add('open');
@@ -519,6 +628,38 @@
       modal.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
     }
+
+    function switchBroker(broker: string) {
+      // Update toggle buttons
+      brokerToggleBtns.forEach(btn => {
+        if (btn.getAttribute('data-broker') === broker) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Show/hide broker cards and buttons
+      if (broker === 'dooprime') {
+        brokerCardDooprime?.classList.remove('hidden');
+        brokerCardCgtrade?.classList.add('hidden');
+        brokerBtnDooprime?.classList.remove('hidden');
+        brokerBtnCgtrade?.classList.add('hidden');
+      } else {
+        brokerCardDooprime?.classList.add('hidden');
+        brokerCardCgtrade?.classList.remove('hidden');
+        brokerBtnDooprime?.classList.add('hidden');
+        brokerBtnCgtrade?.classList.remove('hidden');
+      }
+    }
+
+    // Broker toggle event listeners
+    brokerToggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const broker = btn.getAttribute('data-broker');
+        if (broker) switchBroker(broker);
+      });
+    });
 
     // Event listeners
     ctaButtons.forEach(btn => {
