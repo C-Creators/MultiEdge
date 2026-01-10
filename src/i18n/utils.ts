@@ -1,6 +1,6 @@
 import { translations, type Language } from './translations';
 
-const STORAGE_KEY = 'multiedge-lang';
+const STORAGE_KEY = 'duplifinance-lang';
 
 export function getDefaultLanguage(): Language {
   // Check localStorage first
@@ -56,7 +56,7 @@ export function t(section: string, key: string, lang?: Language): string {
 export const initLanguageScript = `
 <script is:inline>
   (function() {
-    const STORAGE_KEY = 'multiedge-lang';
+    const STORAGE_KEY = 'duplifinance-lang';
     let currentLang = localStorage.getItem(STORAGE_KEY);
     
     if (!currentLang) {

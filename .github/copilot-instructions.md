@@ -1,4 +1,4 @@
-# Copilot Instructions for MultiEdge
+# Copilot Instructions for Duplifinance
 
 ## 🚨 GOLDEN RULE
 
@@ -10,7 +10,7 @@ The user will handle all application execution, testing, and preview tasks. Do n
 
 ## Project Overview
 
-**MultiEdge** is a multilingual landing page for a trading/forex bot service. It showcases bot performance metrics, trading philosophy, supported brokers, and provides calls-to-action for users to get started with the service.
+**Duplifinance** is a multilingual landing page for a trading/forex bot service. It showcases bot performance metrics, trading philosophy, supported brokers, and provides calls-to-action for users to get started with the service.
 
 ### Tech Stack
 
@@ -25,7 +25,7 @@ The user will handle all application execution, testing, and preview tasks. Do n
 ## Project Structure
 
 ```
-MultiEdge/
+Duplifinance/
 ├── astro.config.mjs      # Astro configuration
 ├── package.json          # Dependencies and scripts
 ├── tsconfig.json         # TypeScript configuration

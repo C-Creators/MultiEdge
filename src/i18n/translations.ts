@@ -18,25 +18,25 @@ export const translations = {
 
     // Drawer links
     drawer: {
-      about: "About MultiEdge",
+      about: "About Duplifinance",
       philosophy: "Investment Philosophy",
       systems: "Automated Systems",
       brokers: "Broker Flexibility",
       bot: "Bot Details",
       audience: "Who It's For",
       faq: "FAQ",
-      accessSystems: "Access MultiEdge Systems",
+      accessSystems: "Access Duplifinance Systems",
     },
 
     // Hero
     hero: {
       eyebrow: "Automated Copy Trading • Capital Preservation Mandate",
-      title: "MultiEdge",
+      title: "Duplifinance",
       subtitle: "Systematic copy trading built to protect capital",
       description: "Automated trading systems designed with strict risk controls, low drawdowns, and a long-term capital preservation framework.",
-      cardTitle: "At MultiEdge, risk management is not a feature.",
+      cardTitle: "At Duplifinance, risk management is not a feature.",
       cardSubtitle: "It is the foundation of every system we deploy.",
-      ctaPrimary: "Access MultiEdge Systems",
+      ctaPrimary: "Access Duplifinance Systems",
       ctaSecondary: "Learn More",
       stat1Title: "Risk Parameters",
       stat1Desc: "Predefined rules before deployment.",
@@ -57,9 +57,9 @@ export const translations = {
 
     // About
     about: {
-      kicker: "ABOUT MULTIEDGE",
-      title: "What is MultiEdge?",
-      description: "MultiEdge is a systematic copy trading platform focused on risk-adjusted performance and capital preservation. Our automated strategies are designed for disciplined participants who prioritize drawdown control and longevity.",
+      kicker: "ABOUT DUPLIFINANCE",
+      title: "What is Duplifinance?",
+      description: "Duplifinance is a systematic copy trading platform focused on risk-adjusted performance and capital preservation. Our automated strategies are designed for disciplined participants who prioritize drawdown control and longevity.",
       card1Title: "Risk-adjusted mindset",
       card1Desc: "We design systems that can remain operational across different market regimes—without relying on aggressive exposure.",
       card2Title: "Discipline by design",
@@ -74,7 +74,7 @@ export const translations = {
       title: "Our Core Principle: Capital Comes First",
       description: "Preserving capital is the first objective of any serious trading operation. Growth is only possible when risk is controlled.",
       frameworkTitle: "Capital preservation framework",
-      frameworkDesc: "At MultiEdge, every system is structured around explicit constraints that define how risk is taken and managed.",
+      frameworkDesc: "At Duplifinance, every system is structured around explicit constraints that define how risk is taken and managed.",
       item1Title: "Predefined risk parameters",
       item1Desc: "Rules exist before capital is exposed to the market.",
       item2Title: "Calculated position sizing",
@@ -84,17 +84,18 @@ export const translations = {
       item4Title: "Drawdown is critical",
       item4Desc: "Managed as a primary KPI—not a side effect.",
       quoteTitle: '"A system that survives is a system that can compound."',
-      quoteDesc: "MultiEdge systems prioritize longevity and consistency across regimes—built for disciplined participants with a long-term perspective.",
+      quoteDesc: "Duplifinance systems prioritize longevity and consistency across regimes—built for disciplined participants with a long-term perspective.",
       tagRegime: "Regime-aware",
       tagRisk: "Risk-adjusted",
       tagCapital: "Capital-first",
+      image: "/golden-rule-eng.png",
     },
 
     // Systems
     systems: {
       kicker: "AUTOMATED SYSTEMS",
       title: "Fully Automated, Rule-Based Execution",
-      description: "All MultiEdge strategies operate through fully automated execution, eliminating emotional decision-making and discretionary intervention.",
+      description: "All Duplifinance strategies operate through fully automated execution, eliminating emotional decision-making and discretionary intervention.",
       card1Title: "Historical evaluation",
       card1Desc: "Systems are evaluated across historical data to stress-test behavior and risk constraints.",
       card2Title: "Forward testing",
@@ -104,14 +105,14 @@ export const translations = {
       bandTitle: "Objective: stability, not short-term gains",
       bandDesc: "Our objective is not to maximize short-term gains, but to maintain system stability over time with strict controls and transparent rules.",
       ctaBroker: "Broker Flexibility",
-      ctaStart: "Start with MultiEdge",
+      ctaStart: "Start with Duplifinance",
     },
 
     // Brokers
     brokers: {
       kicker: "BROKER FLEXIBILITY",
       title: "Broker-Agnostic by Design",
-      description: "MultiEdge systems can be connected to any compatible broker that supports copy trading functionality. We are not affiliated with a single broker.",
+      description: "Duplifinance systems can be connected to any compatible broker that supports copy trading functionality. We are not affiliated with a single broker.",
       independenceTitle: "Independence",
       independenceDesc: "The choice of broker remains entirely with the user. We recommend large, regulated brokers for operational safety.",
       standardsTitle: "Recommended institutional standards",
@@ -140,7 +141,7 @@ export const translations = {
       viewAll: "View all",
       dataNote: "Data sourced from public MyFXBook tracking.",
       faqLink: "FAQ",
-      startLink: "Start with MultiEdge",
+      startLink: "Start with Duplifinance",
       modalTitle: "Bot Performance — Full Overview",
       badgeVerified: "Verified:",
       badgePlatform: "Platform:",
@@ -162,9 +163,9 @@ export const translations = {
 
     // Audience
     audience: {
-      kicker: "WHO MULTIEDGE IS FOR",
+      kicker: "WHO DUPLIFINANCE IS FOR",
       title: "Designed for disciplined participants",
-      description: "MultiEdge is for users who understand that capital preservation precedes growth—and who can tolerate market volatility without expecting guarantees.",
+      description: "Duplifinance is for users who understand that capital preservation precedes growth—and who can tolerate market volatility without expecting guarantees.",
       suitableTitle: "Suitable for",
       suitable1Title: "Investors",
       suitable1Desc: "Seeking systematic exposure with controlled risk.",
@@ -195,15 +196,15 @@ export const translations = {
     finalCta: {
       kicker: "FINAL CTA",
       title: "Professional systems. Controlled risk. Long-term perspective.",
-      subtitle: "Start with MultiEdge.",
+      subtitle: "Start with Duplifinance.",
       readFaq: "Read FAQ",
-      accessSystems: "Access MultiEdge Systems",
+      accessSystems: "Access Duplifinance Systems",
     },
 
     // Registration Popup
     register: {
-      modalTitle: "Get Started with MultiEdge",
-      intro: "Follow these two simple steps to start copy trading with MultiEdge systems.",
+      modalTitle: "Get Started with Duplifinance",
+      intro: "Follow these two simple steps to start copy trading with Duplifinance systems.",
       step1Title: "Open a Trading Account",
       step1Desc: "Register with one of our recommended brokers to get access to competitive spreads and reliable execution.",
       step1BtnDooprime: "Open Doo Prime Account",
@@ -211,7 +212,7 @@ export const translations = {
       brokerDescDooprime: "Regulated • Low Spreads • Fast Execution",
       brokerDescCgtrade: "For US Clients • Copy Trading Platform",
       usClients: "(US Clients)",
-      step2Title: "Connect to MultiEdge Systems",
+      step2Title: "Connect to Duplifinance Systems",
       step2Desc: "Register on our copy trading platform to connect your broker account and start copying our automated strategies.",
       step2Btn: "Register for Copy Trading",
       required: "Required",
@@ -223,26 +224,26 @@ export const translations = {
     faq: {
       kicker: "FAQ",
       title: "Frequently Asked Questions",
-      description: "Trading involves risk. MultiEdge provides technology and strategies, not brokerage services or personalized financial advice.",
+      description: "Trading involves risk. Duplifinance provides technology and strategies, not brokerage services or personalized financial advice.",
       q1: "What is copy trading?",
       a1: "Copy trading allows users to replicate the trades of automated or managed strategies in their own brokerage account, proportional to their account size.",
       q2: "Are returns guaranteed?",
       a2: "No. Trading involves risk, and no returns are guaranteed. Past performance does not guarantee future results.",
-      q3: "What markets do MultiEdge systems trade?",
+      q3: "What markets do Duplifinance systems trade?",
       a3: "Markets may include forex, indices, commodities, or other liquid instruments, depending on the specific strategy.",
-      q4: "What makes MultiEdge different from other copy trading platforms?",
+      q4: "What makes Duplifinance different from other copy trading platforms?",
       a4: "Our primary focus is capital preservation and drawdown control, not aggressive return targets.",
       q5: "Can I use any broker?",
       a5: "Yes. Any broker compatible with copy trading may be used. We recommend large, regulated brokers for operational safety.",
       q6: "Can I stop copying at any time?",
       a6: "Yes. Users maintain full control of their accounts and can disconnect from any system at their discretion.",
-      q7: "Is MultiEdge a broker or financial advisor?",
-      a7: "No. MultiEdge is a technology and strategy provider. We do not hold client funds or provide personalized financial advice.",
+      q7: "Is Duplifinance a broker or financial advisor?",
+      a7: "No. Duplifinance is a technology and strategy provider. We do not hold client funds or provide personalized financial advice.",
     },
 
     // Footer
     footer: {
-      copyright: "© {year} MultiEdge. All rights reserved.",
+      copyright: "© {year} Duplifinance. All rights reserved.",
       top: "Top",
       faq: "FAQ",
       bot: "Bot",
@@ -268,25 +269,25 @@ export const translations = {
 
     // Drawer links
     drawer: {
-      about: "Acerca de MultiEdge",
+      about: "Acerca de Duplifinance",
       philosophy: "Filosofía de Inversión",
       systems: "Sistemas Automatizados",
       brokers: "Flexibilidad de Broker",
       bot: "Detalles del Bot",
       audience: "Para Quién Es",
       faq: "Preguntas Frecuentes",
-      accessSystems: "Acceder a Sistemas MultiEdge",
+      accessSystems: "Acceder a Sistemas Duplifinance",
     },
 
     // Hero
     hero: {
       eyebrow: "Copy Trading Automatizado • Mandato de Preservación de Capital",
-      title: "MultiEdge",
+      title: "Duplifinance",
       subtitle: "Copy trading sistemático diseñado para proteger capital",
       description: "Sistemas de trading automatizado diseñados con estrictos controles de riesgo, bajos drawdowns y un marco de preservación de capital a largo plazo.",
-      cardTitle: "En MultiEdge, la gestión de riesgo no es una característica.",
+      cardTitle: "En Duplifinance, la gestión de riesgo no es una característica.",
       cardSubtitle: "Es la base de cada sistema que desplegamos.",
-      ctaPrimary: "Acceder a Sistemas MultiEdge",
+      ctaPrimary: "Acceder a Sistemas Duplifinance",
       ctaSecondary: "Saber Más",
       stat1Title: "Parámetros de Riesgo",
       stat1Desc: "Reglas predefinidas antes del despliegue.",
@@ -307,9 +308,9 @@ export const translations = {
 
     // About
     about: {
-      kicker: "ACERCA DE MULTIEDGE",
-      title: "¿Qué es MultiEdge?",
-      description: "MultiEdge es una plataforma de copy trading sistemático enfocada en rendimiento ajustado al riesgo y preservación de capital. Nuestras estrategias automatizadas están diseñadas para participantes disciplinados que priorizan el control de drawdown y la longevidad.",
+      kicker: "ACERCA DE DUPLIFINANCE",
+      title: "¿Qué es Duplifinance?",
+      description: "Duplifinance es una plataforma de copy trading sistemático enfocada en rendimiento ajustado al riesgo y preservación de capital. Nuestras estrategias automatizadas están diseñadas para participantes disciplinados que priorizan el control de drawdown y la longevidad.",
       card1Title: "Mentalidad ajustada al riesgo",
       card1Desc: "Diseñamos sistemas que pueden mantenerse operativos en diferentes regímenes de mercado—sin depender de exposición agresiva.",
       card2Title: "Disciplina por diseño",
@@ -324,7 +325,7 @@ export const translations = {
       title: "Nuestro Principio Fundamental: El Capital Primero",
       description: "Preservar capital es el primer objetivo de cualquier operación de trading seria. El crecimiento solo es posible cuando el riesgo está controlado.",
       frameworkTitle: "Marco de preservación de capital",
-      frameworkDesc: "En MultiEdge, cada sistema está estructurado alrededor de restricciones explícitas que definen cómo se toma y gestiona el riesgo.",
+      frameworkDesc: "En Duplifinance, cada sistema está estructurado alrededor de restricciones explícitas que definen cómo se toma y gestiona el riesgo.",
       item1Title: "Parámetros de riesgo predefinidos",
       item1Desc: "Las reglas existen antes de que el capital se exponga al mercado.",
       item2Title: "Dimensionamiento de posición calculado",
@@ -334,17 +335,18 @@ export const translations = {
       item4Title: "El drawdown es crítico",
       item4Desc: "Gestionado como un KPI primario—no como un efecto secundario.",
       quoteTitle: '"Un sistema que sobrevive es un sistema que puede capitalizar."',
-      quoteDesc: "Los sistemas MultiEdge priorizan longevidad y consistencia a través de regímenes—construidos para participantes disciplinados con perspectiva a largo plazo.",
+      quoteDesc: "Los sistemas Duplifinance priorizan longevidad y consistencia a través de regímenes—construidos para participantes disciplinados con perspectiva a largo plazo.",
       tagRegime: "Consciente del régimen",
       tagRisk: "Ajustado al riesgo",
       tagCapital: "Capital primero",
+      image: "/golden-rule-es.jpeg",
     },
 
     // Systems
     systems: {
       kicker: "SISTEMAS AUTOMATIZADOS",
       title: "Ejecución Completamente Automatizada, Basada en Reglas",
-      description: "Todas las estrategias MultiEdge operan a través de ejecución completamente automatizada, eliminando la toma de decisiones emocional e intervención discrecional.",
+      description: "Todas las estrategias Duplifinance operan a través de ejecución completamente automatizada, eliminando la toma de decisiones emocional e intervención discrecional.",
       card1Title: "Evaluación histórica",
       card1Desc: "Los sistemas se evalúan con datos históricos para probar comportamiento y restricciones de riesgo.",
       card2Title: "Pruebas en vivo",
@@ -354,14 +356,14 @@ export const translations = {
       bandTitle: "Objetivo: estabilidad, no ganancias a corto plazo",
       bandDesc: "Nuestro objetivo no es maximizar ganancias a corto plazo, sino mantener la estabilidad del sistema a lo largo del tiempo con controles estrictos y reglas transparentes.",
       ctaBroker: "Flexibilidad de Broker",
-      ctaStart: "Comenzar con MultiEdge",
+      ctaStart: "Comenzar con Duplifinance",
     },
 
     // Brokers
     brokers: {
       kicker: "FLEXIBILIDAD DE BROKER",
       title: "Agnóstico de Broker por Diseño",
-      description: "Los sistemas MultiEdge se pueden conectar a cualquier broker compatible que soporte funcionalidad de copy trading. No estamos afiliados a un solo broker.",
+      description: "Los sistemas Duplifinance se pueden conectar a cualquier broker compatible que soporte funcionalidad de copy trading. No estamos afiliados a un solo broker.",
       independenceTitle: "Independencia",
       independenceDesc: "La elección del broker permanece enteramente con el usuario. Recomendamos brokers grandes y regulados para seguridad operativa.",
       standardsTitle: "Estándares institucionales recomendados",
@@ -390,7 +392,7 @@ export const translations = {
       viewAll: "Ver todo",
       dataNote: "Datos obtenidos del seguimiento público de MyFXBook.",
       faqLink: "FAQ",
-      startLink: "Comenzar con MultiEdge",
+      startLink: "Comenzar con Duplifinance",
       modalTitle: "Rendimiento del Bot — Vista Completa",
       badgeVerified: "Verificado:",
       badgePlatform: "Plataforma:",
@@ -412,9 +414,9 @@ export const translations = {
 
     // Audience
     audience: {
-      kicker: "PARA QUIÉN ES MULTIEDGE",
+      kicker: "PARA QUIÉN ES DUPLIFINANCE",
       title: "Diseñado para participantes disciplinados",
-      description: "MultiEdge es para usuarios que entienden que la preservación de capital precede al crecimiento—y que pueden tolerar la volatilidad del mercado sin esperar garantías.",
+      description: "Duplifinance es para usuarios que entienden que la preservación de capital precede al crecimiento—y que pueden tolerar la volatilidad del mercado sin esperar garantías.",
       suitableTitle: "Adecuado para",
       suitable1Title: "Inversores",
       suitable1Desc: "Buscando exposición sistemática con riesgo controlado.",
@@ -445,15 +447,15 @@ export const translations = {
     finalCta: {
       kicker: "CTA FINAL",
       title: "Sistemas profesionales. Riesgo controlado. Perspectiva a largo plazo.",
-      subtitle: "Comienza con MultiEdge.",
+      subtitle: "Comienza con Duplifinance.",
       readFaq: "Leer FAQ",
-      accessSystems: "Acceder a Sistemas MultiEdge",
+      accessSystems: "Acceder a Sistemas Duplifinance",
     },
 
     // Registration Popup
     register: {
-      modalTitle: "Comienza con MultiEdge",
-      intro: "Sigue estos dos simples pasos para comenzar a hacer copy trading con los sistemas MultiEdge.",
+      modalTitle: "Comienza con Duplifinance",
+      intro: "Sigue estos dos simples pasos para comenzar a hacer copy trading con los sistemas Duplifinance.",
       step1Title: "Abre una Cuenta de Trading",
       step1Desc: "Regístrate con uno de nuestros brokers recomendados para obtener acceso a spreads competitivos y ejecución confiable.",
       step1BtnDooprime: "Abrir Cuenta Doo Prime",
@@ -461,7 +463,7 @@ export const translations = {
       brokerDescDooprime: "Regulado • Spreads Bajos • Ejecución Rápida",
       brokerDescCgtrade: "Para Clientes de EE.UU. • Plataforma Copy Trading",
       usClients: "(Clientes EE.UU.)",
-      step2Title: "Conecta a los Sistemas MultiEdge",
+      step2Title: "Conecta a los Sistemas Duplifinance",
       step2Desc: "Regístrate en nuestra plataforma de copy trading para conectar tu cuenta de broker y comenzar a copiar nuestras estrategias automatizadas.",
       step2Btn: "Registrarse para Copy Trading",
       required: "Requerido",
@@ -473,26 +475,26 @@ export const translations = {
     faq: {
       kicker: "FAQ",
       title: "Preguntas Frecuentes",
-      description: "El trading implica riesgo. MultiEdge proporciona tecnología y estrategias, no servicios de corretaje ni asesoramiento financiero personalizado.",
+      description: "El trading implica riesgo. Duplifinance proporciona tecnología y estrategias, no servicios de corretaje ni asesoramiento financiero personalizado.",
       q1: "¿Qué es el copy trading?",
       a1: "El copy trading permite a los usuarios replicar las operaciones de estrategias automatizadas o gestionadas en su propia cuenta de corretaje, proporcional al tamaño de su cuenta.",
       q2: "¿Los retornos están garantizados?",
       a2: "No. El trading implica riesgo, y ningún retorno está garantizado. El rendimiento pasado no garantiza resultados futuros.",
-      q3: "¿En qué mercados operan los sistemas MultiEdge?",
+      q3: "¿En qué mercados operan los sistemas Duplifinance?",
       a3: "Los mercados pueden incluir forex, índices, materias primas u otros instrumentos líquidos, dependiendo de la estrategia específica.",
-      q4: "¿Qué hace diferente a MultiEdge de otras plataformas de copy trading?",
+      q4: "¿Qué hace diferente a Duplifinance de otras plataformas de copy trading?",
       a4: "Nuestro enfoque principal es la preservación de capital y control de drawdown, no objetivos de retorno agresivos.",
       q5: "¿Puedo usar cualquier broker?",
       a5: "Sí. Cualquier broker compatible con copy trading puede ser usado. Recomendamos brokers grandes y regulados para seguridad operativa.",
       q6: "¿Puedo dejar de copiar en cualquier momento?",
       a6: "Sí. Los usuarios mantienen control total de sus cuentas y pueden desconectarse de cualquier sistema a su discreción.",
-      q7: "¿Es MultiEdge un broker o asesor financiero?",
-      a7: "No. MultiEdge es un proveedor de tecnología y estrategias. No mantenemos fondos de clientes ni proporcionamos asesoramiento financiero personalizado.",
+      q7: "¿Es Duplifinance un broker o asesor financiero?",
+      a7: "No. Duplifinance es un proveedor de tecnología y estrategias. No mantenemos fondos de clientes ni proporcionamos asesoramiento financiero personalizado.",
     },
 
     // Footer
     footer: {
-      copyright: "© {year} MultiEdge. Todos los derechos reservados.",
+      copyright: "© {year} Duplifinance. Todos los derechos reservados.",
       top: "Inicio",
       faq: "FAQ",
       bot: "Bot",

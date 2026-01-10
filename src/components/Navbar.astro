@@ -17,12 +17,11 @@ const navLinks: NavLink[] = [
 ];
 
 const drawerLinks: NavLink[] = [
-  { href: "#about", label: "About MultiEdge", i18nKey: "drawer.about" },
+  { href: "#about", label: "About Duplifinance", i18nKey: "drawer.about" },
   { href: "#philosophy", label: "Investment Philosophy", i18nKey: "drawer.philosophy" },
   { href: "#systems", label: "Automated Systems", i18nKey: "drawer.systems" },
   { href: "#brokers", label: "Broker Flexibility", i18nKey: "drawer.brokers" },
   { href: "#bot", label: "Bot Details", i18nKey: "drawer.bot" },
-  { href: "#audience", label: "Who It's For", i18nKey: "drawer.audience" },
   { href: "#faq", label: "FAQ", i18nKey: "drawer.faq" },
 ];
 ---
@@ -32,11 +31,9 @@ const drawerLinks: NavLink[] = [
   <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile menu">
     <div class="drawer-head">
       <div class="brand" style="min-width:unset">
-        <div class="logo" aria-hidden="true">
-          <i data-lucide="layers" style="width:18px;height:18px;color:rgba(251,254,250,0.92)"></i>
-        </div>
+        <img src="/duplifinance-logo.svg" alt="Duplifinance Logo" class="brand-logo" style="width:38px;height:38px;" />
         <div>
-          <h1>MULTIEDGE</h1>
+          <h1>DUPLIFINANCE</h1>
           <span data-i18n="nav.brandTaglineDrawer">Capital Preservation</span>
         </div>
       </div>
@@ -58,7 +55,7 @@ const drawerLinks: NavLink[] = [
       </button>
       <button class="btn btn-primary" data-open-register data-close-drawer>
         <i data-lucide="arrow-right"></i>
-        <span data-i18n="drawer.accessSystems">Access MultiEdge Systems</span>
+        <span data-i18n="drawer.accessSystems">Access Duplifinance Systems</span>
       </button>
     </div>
   </div>
@@ -68,11 +65,9 @@ const drawerLinks: NavLink[] = [
 <header class="nav">
   <div class="container nav-inner">
     <a class="brand" href="#top" aria-label="Go to top">
-      <div class="logo" aria-hidden="true">
-        <i data-lucide="layers" style="width:18px;height:18px;color:rgba(251,254,250,0.92)"></i>
-      </div>
+      <img src="/duplifinance-logo.svg" alt="Duplifinance Logo" class="brand-logo" style="width:38px;height:38px;" />
       <div>
-        <h1>MULTIEDGE</h1>
+        <h1>DUPLIFINANCE</h1>
         <span data-i18n="nav.brandTagline">Copy Trading • Risk-First</span>
       </div>
     </a>
@@ -102,7 +97,7 @@ const drawerLinks: NavLink[] = [
 <script>
   // Theme persisted
   const root = document.documentElement;
-  const THEME_KEY = "multiedge_theme";
+  const THEME_KEY = "duplifinance_theme";
   const stored = localStorage.getItem(THEME_KEY);
   const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 

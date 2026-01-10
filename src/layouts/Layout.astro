@@ -6,7 +6,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "MultiEdge is a systematic copy trading platform focused on risk-adjusted performance and capital preservation." } = Astro.props;
+const { title, description = "Duplifinance is a systematic copy trading platform focused on risk-adjusted performance and capital preservation." } = Astro.props;
 
 // Serialize translations for client-side use
 const translationsJSON = JSON.stringify(translations);
@@ -40,7 +40,7 @@ const translationsJSON = JSON.stringify(translations);
     
     // Detect and set language before paint
     (function() {
-      const STORAGE_KEY = 'multiedge-lang';
+      const STORAGE_KEY = 'duplifinance-lang';
       const storedLang = localStorage.getItem(STORAGE_KEY);
       let currentLang;
       

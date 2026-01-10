@@ -54,7 +54,7 @@
 </style>
 
 <script>
-  const STORAGE_KEY = 'multiedge-lang';
+  const STORAGE_KEY = 'duplifinance-lang';
   
   function initLanguageSwitcher() {
     const enBtn = document.getElementById('lang-en');
@@ -152,6 +152,18 @@
         const translation = getTranslation(lang, section, field);
         if (translation) {
           el.setAttribute('aria-label', translation);
+        }
+      }
+    });
+
+    // Update elements with data-i18n-img (for language-specific images)
+    document.querySelectorAll('[data-i18n-img]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-img');
+      if (key) {
+        const [section, field] = key.split('.');
+        const translation = getTranslation(lang, section, field);
+        if (translation && el instanceof HTMLImageElement) {
+          el.src = translation;
         }
       }
     });
