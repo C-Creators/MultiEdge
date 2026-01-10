@@ -137,6 +137,11 @@
     animation: modalSlideIn 0.3s var(--ease);
   }
 
+  [data-theme="dark"] .register-modal {
+    background: linear-gradient(180deg, rgba(16,22,24,0.98), rgba(12,18,20,0.98));
+    border-color: rgba(196,233,174,0.20);
+  }
+
   @keyframes modalSlideIn {
     from {
       opacity: 0;
@@ -189,6 +194,10 @@
     text-align: center;
   }
 
+  [data-theme="dark"] .register-intro {
+    color: rgba(251,254,250,0.72);
+  }
+
   .register-step {
     display: flex;
     gap: 16px;
@@ -199,7 +208,8 @@
   }
 
   [data-theme="dark"] .register-step {
-    background: rgba(16,25,27,0.50);
+    background: rgba(30,40,44,0.80);
+    border-color: rgba(196,233,174,0.15);
   }
 
   .step-number {
@@ -217,7 +227,7 @@
 
   [data-theme="dark"] .step-number {
     background: linear-gradient(135deg, rgba(196,233,174,0.90), rgba(142,232,140,0.70));
-    color: rgba(7,12,14,0.92);
+    color: rgba(7,12,14,0.95);
   }
 
   .step-content {
@@ -238,6 +248,11 @@
     font-size: 15px;
     font-weight: 950;
     letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  [data-theme="dark"] .step-header h4 {
+    color: rgba(251,254,250,0.95);
   }
 
   .step-badge {
@@ -252,7 +267,7 @@
   }
 
   [data-theme="dark"] .step-badge {
-    background: rgba(196,233,174,0.15);
+    background: rgba(196,233,174,0.20);
     color: rgba(196,233,174,0.95);
   }
 
@@ -262,6 +277,10 @@
     font-size: 13px;
     font-weight: 700;
     line-height: 1.55;
+  }
+
+  [data-theme="dark"] .step-content p {
+    color: rgba(251,254,250,0.70);
   }
 
   .broker-card {
@@ -276,7 +295,8 @@
   }
 
   [data-theme="dark"] .broker-card {
-    background: rgba(16,25,27,0.60);
+    background: rgba(20,28,32,0.90);
+    border-color: rgba(196,233,174,0.12);
   }
 
   .broker-logo {
@@ -318,12 +338,21 @@
   .broker-info strong {
     font-size: 14px;
     font-weight: 950;
+    color: var(--text);
+  }
+
+  [data-theme="dark"] .broker-info strong {
+    color: rgba(251,254,250,0.95);
   }
 
   .broker-info span {
     font-size: 11px;
     color: var(--muted);
     font-weight: 700;
+  }
+
+  [data-theme="dark"] .broker-info span {
+    color: rgba(251,254,250,0.65);
   }
 
   .step-btn {
@@ -365,13 +394,18 @@
   }
 
   [data-theme="dark"] .register-disclaimer {
-    background: rgba(255,180,0,0.08);
-    border-color: rgba(255,180,0,0.18);
+    background: rgba(255,180,0,0.12);
+    border-color: rgba(255,180,0,0.25);
+    color: rgba(251,254,250,0.75);
   }
 
   .register-disclaimer i {
-    color: rgb(200,150,0);
+    color: rgb(220,170,30);
     margin-top: 2px;
+  }
+
+  [data-theme="dark"] .register-disclaimer i {
+    color: rgb(255,200,60);
   }
 
   .register-disclaimer p {
