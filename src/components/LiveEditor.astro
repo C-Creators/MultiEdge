@@ -18,9 +18,6 @@ if (accessToken && refreshToken) {
 ---
 
 {isAdmin && (
-  <!-- Floating UI for popover positioning -->
-  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/dist/floating-ui.dom.umd.min.js"></script>
-
   <!-- Edit Mode Toggle -->
   <button id="editModeToggle" class="edit-toggle" title="Toggle Edit Mode">
     <svg class="icon-edit" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -77,27 +74,27 @@ if (accessToken && refreshToken) {
     <span id="editToastMsg">Saved!</span>
   </div>
 
-  <script is:inline>
-  (function() {
-    const { computePosition, flip, shift, offset, arrow } = FloatingUIDOM;
-    
-    // Elements
-    const toggle = document.getElementById('editModeToggle');
-    const adminBar = document.getElementById('adminBar');
-    const popover = document.getElementById('editPopover');
-    const popoverKey = document.getElementById('popoverKey');
-    const popoverEn = document.getElementById('popoverEn');
-    const popoverEs = document.getElementById('popoverEs');
-    const popoverArrow = popover.querySelector('.popover-arrow');
-    const toast = document.getElementById('editToast');
-    const toastMsg = document.getElementById('editToastMsg');
-    
-    let editMode = false;
-    let currentElement = null;
-    let currentKey = null;
-    
-    // Toggle edit mode
-    function setEditMode(enabled) {
+  <script type="module">
+  // Import Floating UI from ESM CDN
+  import { computePosition, flip, shift, offset, arrow } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/+esm';
+  
+  // Elements
+  const toggle = document.getElementById('editModeToggle');
+  const adminBar = document.getElementById('adminBar');
+  const popover = document.getElementById('editPopover');
+  const popoverKey = document.getElementById('popoverKey');
+  const popoverEn = document.getElementById('popoverEn');
+  const popoverEs = document.getElementById('popoverEs');
+  const popoverArrow = popover.querySelector('.popover-arrow');
+  const toast = document.getElementById('editToast');
+  const toastMsg = document.getElementById('editToastMsg');
+  
+  let editMode = false;
+  let currentElement = null;
+  let currentKey = null;
+  
+  // Toggle edit mode
+  function setEditMode(enabled) {
       editMode = enabled;
       document.body.classList.toggle('live-edit-mode', enabled);
       adminBar.classList.toggle('visible', enabled);
@@ -301,11 +298,9 @@ if (accessToken && refreshToken) {
           ticking = false;
         });
         ticking = true;
-      }
     };
     window.addEventListener('scroll', reposition, true);
     window.addEventListener('resize', reposition);
-  })();
   </script>
 
   <style is:global>
