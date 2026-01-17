@@ -1,0 +1,449 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { createServerClient } from '../../lib/supabase';
+
+// Check authentication
+const supabase = createServerClient(Astro.cookies);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+let session = null;
+
+if (accessToken && refreshToken) {
+  const { data } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  });
+  session = data.session;
+}
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+// Fetch some stats for the dashboard
+const { count: contentCount } = await supabase
+  .from('site_content')
+  .select('*', { count: 'exact', head: true });
+
+const { count: imageCount } = await supabase
+  .from('site_images')
+  .select('*', { count: 'exact', head: true });
+
+// Get recent content updates
+const { data: recentUpdates } = await supabase
+  .from('site_content')
+  .select('*')
+  .order('updated_at', { ascending: false })
+  .limit(5);
+---
+
+<AdminLayout title="Dashboard">
+  <div class="dashboard-grid">
+    <!-- Stats Cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i data-lucide="file-text"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{contentCount ?? 0}</span>
+          <span class="stat-label">Content Items</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <i data-lucide="image"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{imageCount ?? 0}</span>
+          <span class="stat-label">Images</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon purple">
+          <i data-lucide="globe"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">2</span>
+          <span class="stat-label">Languages</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon gold">
+          <i data-lucide="layout-template"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">11</span>
+          <span class="stat-label">Sections</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="dashboard-section">
+      <h2><i data-lucide="zap"></i> Quick Actions</h2>
+      <div class="quick-actions">
+        <a href="/admin/content" class="action-card">
+          <i data-lucide="edit-3"></i>
+          <span>Edit Content</span>
+          <p>Manage text translations</p>
+        </a>
+        <a href="/admin/images" class="action-card">
+          <i data-lucide="upload"></i>
+          <span>Upload Images</span>
+          <p>Add or replace images</p>
+        </a>
+        <a href="/admin/analytics" class="action-card">
+          <i data-lucide="trending-up"></i>
+          <span>View Analytics</span>
+          <p>Check visitor stats</p>
+        </a>
+        <a href="/" target="_blank" class="action-card">
+          <i data-lucide="external-link"></i>
+          <span>Preview Site</span>
+          <p>Open in new tab</p>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Recent Updates -->
+    <div class="dashboard-section">
+      <h2><i data-lucide="clock"></i> Recent Content Updates</h2>
+      {recentUpdates && recentUpdates.length > 0 ? (
+        <div class="updates-list">
+          {recentUpdates.map(item => (
+            <div class="update-item">
+              <div class="update-icon">
+                <i data-lucide="file-edit"></i>
+              </div>
+              <div class="update-info">
+                <span class="update-key">{item.section}.{item.key}</span>
+                <span class="update-time">{new Date(item.updated_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <i data-lucide="inbox"></i>
+          <p>No content updates yet. Content will appear here once you start editing.</p>
+          <a href="/admin/content" class="btn-primary">
+            <i data-lucide="plus"></i>
+            Start Adding Content
+          </a>
+        </div>
+      )}
+    </div>
+    
+    <!-- Setup Guide -->
+    <div class="dashboard-section setup-guide">
+      <h2><i data-lucide="book-open"></i> Setup Guide</h2>
+      <div class="setup-steps">
+        <div class="setup-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Configure Supabase</h3>
+            <p>Create tables for <code>site_content</code> and <code>site_images</code> in your Supabase dashboard.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Import Content</h3>
+            <p>Use the "Sync from File" button on the Content page to import your existing translations.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Upload Images</h3>
+            <p>Go to Images and upload your site assets to Supabase Storage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .stat-icon i {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+  .stat-icon.green { background: #dcfce7; color: #16a34a; }
+  .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+  .stat-icon.gold { background: #fef3c7; color: #d97706; }
+  
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1;
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  
+  .dashboard-section {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .dashboard-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-section h2 i {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+  }
+  
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+  }
+  
+  .action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 25px 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  
+  .action-card:hover {
+    background: #fff;
+    border-color: #c9a227;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .action-card i {
+    width: 32px;
+    height: 32px;
+    color: #c9a227;
+    margin-bottom: 12px;
+  }
+  
+  .action-card span {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 5px;
+  }
+  
+  .action-card p {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  
+  .updates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .update-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .update-icon {
+    width: 36px;
+    height: 36px;
+    background: #e9ecef;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .update-icon i {
+    width: 18px;
+    height: 18px;
+    color: #6b7280;
+  }
+  
+  .update-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .update-key {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a2e;
+    font-family: monospace;
+  }
+  
+  .update-time {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+  }
+  
+  .empty-state i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+  
+  .empty-state p {
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #1a1a2e;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary:hover {
+    background: #2d2d44;
+  }
+  
+  .btn-primary i {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 0;
+    opacity: 1;
+  }
+  
+  .setup-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .setup-step {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  
+  .step-number {
+    width: 32px;
+    height: 32px;
+    background: #c9a227;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  
+  .step-content h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 5px;
+  }
+  
+  .step-content p {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+  
+  .step-content code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  @media (max-width: 768px) {
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-actions {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

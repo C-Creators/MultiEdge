@@ -1,0 +1,728 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { createServerClient } from '../../lib/supabase';
+
+// Check authentication
+const supabase = createServerClient(Astro.cookies);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+let session = null;
+
+if (accessToken && refreshToken) {
+  const { data } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  });
+  session = data.session;
+}
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+// Fetch analytics from site_analytics table (if exists)
+const { data: analyticsData } = await supabase
+  .from('site_analytics')
+  .select('*')
+  .order('date', { ascending: false })
+  .limit(30);
+
+// Demo data for when no real data exists
+const demoData = {
+  visitors: 1247,
+  pageviews: 4523,
+  bounceRate: 42,
+  avgDuration: '2m 34s',
+  topPages: [
+    { page: '/', views: 1823, visitors: 892 },
+    { page: '/#about', views: 654, visitors: 321 },
+    { page: '/#philosophy', views: 432, visitors: 234 },
+    { page: '/#systems', views: 387, visitors: 198 },
+    { page: '/#brokers', views: 312, visitors: 156 },
+  ],
+  topSources: [
+    { source: 'Google', visitors: 523 },
+    { source: 'Direct', visitors: 412 },
+    { source: 'Twitter', visitors: 187 },
+    { source: 'Facebook', visitors: 89 },
+    { source: 'LinkedIn', visitors: 36 },
+  ],
+  dailyVisitors: [
+    { date: '2024-01-10', visitors: 89 },
+    { date: '2024-01-11', visitors: 112 },
+    { date: '2024-01-12', visitors: 98 },
+    { date: '2024-01-13', visitors: 67 },
+    { date: '2024-01-14', visitors: 45 },
+    { date: '2024-01-15', visitors: 156 },
+    { date: '2024-01-16', visitors: 178 },
+  ]
+};
+
+const hasRealData = analyticsData && analyticsData.length > 0;
+---
+
+<AdminLayout title="Analytics">
+  <div class="analytics-page">
+    {!hasRealData && (
+      <div class="demo-notice">
+        <i data-lucide="info"></i>
+        <div>
+          <strong>Demo Data</strong>
+          <p>Connect an analytics provider or create a <code>site_analytics</code> table in Supabase to see real data.</p>
+        </div>
+      </div>
+    )}
+    
+    <!-- Date Range Selector -->
+    <div class="analytics-header">
+      <div class="date-range">
+        <button class="range-btn active" data-range="7d">7 Days</button>
+        <button class="range-btn" data-range="30d">30 Days</button>
+        <button class="range-btn" data-range="90d">90 Days</button>
+      </div>
+      <div class="header-actions">
+        <a href="https://plausible.io" target="_blank" class="btn-secondary">
+          <i data-lucide="external-link"></i>
+          Try Plausible
+        </a>
+        <a href="https://umami.is" target="_blank" class="btn-secondary">
+          <i data-lucide="external-link"></i>
+          Try Umami
+        </a>
+      </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon visitors">
+          <i data-lucide="users"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{demoData.visitors.toLocaleString()}</span>
+          <span class="stat-label">Unique Visitors</span>
+          <span class="stat-trend positive">
+            <i data-lucide="trending-up"></i>
+            +12.5%
+          </span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon pageviews">
+          <i data-lucide="eye"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{demoData.pageviews.toLocaleString()}</span>
+          <span class="stat-label">Page Views</span>
+          <span class="stat-trend positive">
+            <i data-lucide="trending-up"></i>
+            +8.3%
+          </span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon bounce">
+          <i data-lucide="log-out"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{demoData.bounceRate}%</span>
+          <span class="stat-label">Bounce Rate</span>
+          <span class="stat-trend negative">
+            <i data-lucide="trending-down"></i>
+            -3.2%
+          </span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon duration">
+          <i data-lucide="clock"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{demoData.avgDuration}</span>
+          <span class="stat-label">Avg. Duration</span>
+          <span class="stat-trend positive">
+            <i data-lucide="trending-up"></i>
+            +15s
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3><i data-lucide="trending-up"></i> Visitors Over Time</h3>
+        <canvas id="visitorsChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Tables Row -->
+    <div class="tables-row">
+      <div class="table-card">
+        <h3><i data-lucide="file-text"></i> Top Pages</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Views</th>
+              <th>Visitors</th>
+            </tr>
+          </thead>
+          <tbody>
+            {demoData.topPages.map(page => (
+              <tr>
+                <td class="page-name">{page.page}</td>
+                <td>{page.views.toLocaleString()}</td>
+                <td>{page.visitors.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="table-card">
+        <h3><i data-lucide="share-2"></i> Top Sources</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Visitors</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {demoData.topSources.map(source => {
+              const percentage = ((source.visitors / demoData.visitors) * 100).toFixed(1);
+              return (
+                <tr>
+                  <td class="source-name">{source.source}</td>
+                  <td>{source.visitors.toLocaleString()}</td>
+                  <td>
+                    <div class="percentage-bar">
+                      <div class="bar-fill" style={`width: ${percentage}%`}></div>
+                      <span>{percentage}%</span>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Analytics Integration Guide -->
+    <div class="integration-guide">
+      <h3><i data-lucide="puzzle"></i> Analytics Integration Options</h3>
+      <div class="options-grid">
+        <div class="option-card">
+          <div class="option-logo">
+            <i data-lucide="bar-chart-2"></i>
+          </div>
+          <h4>Plausible Analytics</h4>
+          <p>Privacy-friendly, lightweight, and open-source. No cookies required.</p>
+          <a href="https://plausible.io/docs" target="_blank" class="option-link">View Docs →</a>
+        </div>
+        
+        <div class="option-card">
+          <div class="option-logo">
+            <i data-lucide="activity"></i>
+          </div>
+          <h4>Umami</h4>
+          <p>Self-hosted, privacy-focused web analytics alternative to Google Analytics.</p>
+          <a href="https://umami.is/docs" target="_blank" class="option-link">View Docs →</a>
+        </div>
+        
+        <div class="option-card">
+          <div class="option-logo">
+            <i data-lucide="database"></i>
+          </div>
+          <h4>Custom (Supabase)</h4>
+          <p>Build your own analytics using Supabase edge functions and database.</p>
+          <a href="https://supabase.com/docs/guides/functions" target="_blank" class="option-link">View Docs →</a>
+        </div>
+        
+        <div class="option-card">
+          <div class="option-logo">
+            <i data-lucide="line-chart"></i>
+          </div>
+          <h4>Vercel Analytics</h4>
+          <p>Built-in analytics if you're hosting on Vercel. Zero configuration.</p>
+          <a href="https://vercel.com/docs/analytics" target="_blank" class="option-link">View Docs →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script define:vars={{ demoData }}>
+  // Initialize chart
+  document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('visitorsChart');
+    
+    if (ctx && typeof Chart !== 'undefined') {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: demoData.dailyVisitors.map(d => {
+            const date = new Date(d.date);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          }),
+          datasets: [{
+            label: 'Visitors',
+            data: demoData.dailyVisitors.map(d => d.visitors),
+            borderColor: '#c9a227',
+            backgroundColor: 'rgba(201, 162, 39, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#c9a227',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#f3f4f6'
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Date range buttons
+    document.querySelectorAll('.range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // In a real implementation, this would fetch new data
+      });
+    });
+  });
+</script>
+
+<style>
+  .analytics-page {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .demo-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    background: #fef3c7;
+    border-radius: 12px;
+    border: 1px solid #fcd34d;
+  }
+  
+  .demo-notice i {
+    width: 24px;
+    height: 24px;
+    color: #d97706;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .demo-notice strong {
+    display: block;
+    color: #92400e;
+    margin-bottom: 5px;
+  }
+  
+  .demo-notice p {
+    font-size: 14px;
+    color: #92400e;
+    margin: 0;
+  }
+  
+  .demo-notice code {
+    background: rgba(0,0,0,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .date-range {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .range-btn {
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .range-btn:hover {
+    border-color: #c9a227;
+    color: #c9a227;
+  }
+  
+  .range-btn.active {
+    background: #1a1a2e;
+    border-color: #1a1a2e;
+    color: #fff;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #c9a227;
+  }
+  
+  .btn-secondary i {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: #fff;
+    padding: 22px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .stat-icon i {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .stat-icon.visitors { background: #dbeafe; color: #2563eb; }
+  .stat-icon.pageviews { background: #dcfce7; color: #16a34a; }
+  .stat-icon.bounce { background: #fee2e2; color: #dc2626; }
+  .stat-icon.duration { background: #f3e8ff; color: #9333ea; }
+  
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  
+  .stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    width: fit-content;
+  }
+  
+  .stat-trend i {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .stat-trend.positive {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  
+  .stat-trend.negative {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .charts-row {
+    display: grid;
+    gap: 20px;
+  }
+  
+  .chart-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .chart-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+  }
+  
+  .chart-card h3 i {
+    width: 18px;
+    height: 18px;
+    color: #6b7280;
+  }
+  
+  .chart-card canvas {
+    height: 250px !important;
+  }
+  
+  .tables-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+  }
+  
+  .table-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .table-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+  }
+  
+  .table-card h3 i {
+    width: 18px;
+    height: 18px;
+    color: #6b7280;
+  }
+  
+  .table-card table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-card th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .table-card td {
+    padding: 12px 0;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .page-name {
+    font-family: monospace;
+    font-size: 13px;
+  }
+  
+  .percentage-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .bar-fill {
+    height: 6px;
+    background: #c9a227;
+    border-radius: 3px;
+    min-width: 20px;
+  }
+  
+  .percentage-bar span {
+    font-size: 12px;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+  
+  .integration-guide {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .integration-guide h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+  }
+  
+  .integration-guide h3 i {
+    width: 20px;
+    height: 20px;
+    color: #c9a227;
+  }
+  
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+  }
+  
+  .option-card {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  
+  .option-card:hover {
+    border-color: #c9a227;
+    background: #fffbeb;
+  }
+  
+  .option-logo {
+    width: 40px;
+    height: 40px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  
+  .option-logo i {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+  }
+  
+  .option-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  
+  .option-card p {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  
+  .option-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: #c9a227;
+    text-decoration: none;
+  }
+  
+  .option-link:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .analytics-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .date-range {
+      justify-content: center;
+    }
+    
+    .header-actions {
+      justify-content: center;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .tables-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

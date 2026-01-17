@@ -1,5 +1,5 @@
 ---
-import { translations } from '../i18n/translations';
+import { getTranslations } from '../lib/content';
 
 interface Props {
   title: string;
@@ -7,6 +7,9 @@ interface Props {
 }
 
 const { title, description = "Duplifinance is a systematic copy trading platform focused on risk-adjusted performance and capital preservation." } = Astro.props;
+
+// Fetch translations from Supabase (with file fallback)
+const translations = await getTranslations();
 
 // Serialize translations for client-side use
 const translationsJSON = JSON.stringify(translations);

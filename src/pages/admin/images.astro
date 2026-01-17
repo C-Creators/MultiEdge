@@ -1,0 +1,639 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { createServerClient } from '../../lib/supabase';
+
+// Check authentication
+const supabase = createServerClient(Astro.cookies);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+let session = null;
+
+if (accessToken && refreshToken) {
+  const { data } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  });
+  session = data.session;
+}
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+// Fetch images from Supabase Storage
+const { data: buckets } = await supabase.storage.listBuckets();
+const siteImagesBucket = buckets?.find(b => b.name === 'site-images');
+
+let images: { name: string; url: string; updated_at: string }[] = [];
+
+if (siteImagesBucket) {
+  const { data: files } = await supabase.storage.from('site-images').list();
+  
+  if (files) {
+    images = files.map(file => ({
+      name: file.name,
+      url: supabase.storage.from('site-images').getPublicUrl(file.name).data.publicUrl,
+      updated_at: file.updated_at || new Date().toISOString()
+    }));
+  }
+}
+
+// Also get images from public folder for reference
+const publicImages = [
+  { name: 'duplifinance-logo.svg', path: '/duplifinance-logo.svg' },
+  { name: 'favicon.svg', path: '/favicon.svg' },
+  { name: 'golden-rule-eng.png', path: '/golden-rule-eng.png' },
+  { name: 'golden-rule-es.jpeg', path: '/golden-rule-es.jpeg' }
+];
+---
+
+<AdminLayout title="Image Management">
+  <div class="images-manager">
+    <!-- Upload Area -->
+    <div class="upload-section">
+      <div class="upload-area" id="uploadArea">
+        <i data-lucide="upload-cloud"></i>
+        <h3>Upload Images</h3>
+        <p>Drag and drop files here, or click to browse</p>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden />
+        <button class="btn-primary" id="browseBtn">
+          <i data-lucide="folder-open"></i>
+          Browse Files
+        </button>
+      </div>
+      
+      <div class="upload-info">
+        <p><strong>Accepted formats:</strong> PNG, JPG, JPEG, SVG, WebP</p>
+        <p><strong>Max file size:</strong> 5MB per file</p>
+      </div>
+    </div>
+    
+    <!-- Supabase Storage Images -->
+    <div class="images-section">
+      <h2>
+        <i data-lucide="cloud"></i>
+        Supabase Storage Images
+        <span class="count">{images.length}</span>
+      </h2>
+      
+      {images.length > 0 ? (
+        <div class="images-grid">
+          {images.map(image => (
+            <div class="image-card" data-name={image.name}>
+              <div class="image-preview">
+                <img src={image.url} alt={image.name} loading="lazy" />
+              </div>
+              <div class="image-info">
+                <span class="image-name" title={image.name}>{image.name}</span>
+                <div class="image-actions">
+                  <button class="btn-icon" data-action="copy" data-url={image.url} title="Copy URL">
+                    <i data-lucide="copy"></i>
+                  </button>
+                  <button class="btn-icon danger" data-action="delete" data-name={image.name} title="Delete">
+                    <i data-lucide="trash-2"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <i data-lucide="image"></i>
+          <p>No images in Supabase Storage yet.</p>
+          <p class="hint">Upload images above or create the "site-images" bucket in Supabase.</p>
+        </div>
+      )}
+    </div>
+    
+    <!-- Public Folder Images (Read-only reference) -->
+    <div class="images-section">
+      <h2>
+        <i data-lucide="folder"></i>
+        Public Folder Images
+        <span class="count">{publicImages.length}</span>
+        <span class="badge-readonly">Read-only</span>
+      </h2>
+      <p class="section-desc">These images are stored in the <code>public/</code> folder. To manage them, edit the files directly or upload replacements to Supabase Storage.</p>
+      
+      <div class="images-grid">
+        {publicImages.map(image => (
+          <div class="image-card readonly">
+            <div class="image-preview">
+              <img src={image.path} alt={image.name} loading="lazy" />
+            </div>
+            <div class="image-info">
+              <span class="image-name" title={image.name}>{image.name}</span>
+              <div class="image-actions">
+                <button class="btn-icon" data-action="copy" data-url={image.path} title="Copy Path">
+                  <i data-lucide="copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden">
+    <i data-lucide="check-circle"></i>
+    <span id="toastMessage">Action completed</span>
+  </div>
+  
+  <!-- Upload Progress Modal -->
+  <div id="uploadModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Uploading Images</h3>
+      <div class="upload-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p id="progressText">Uploading...</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  const uploadArea = document.getElementById('uploadArea')!;
+  const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+  const browseBtn = document.getElementById('browseBtn')!;
+  
+  // Browse button click
+  browseBtn.addEventListener('click', () => fileInput.click());
+  
+  // Drag and drop
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+  
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+  
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const files = e.dataTransfer?.files;
+    if (files) handleUpload(files);
+  });
+  
+  // File input change
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files) handleUpload(fileInput.files);
+  });
+  
+  // Handle upload
+  async function handleUpload(files: FileList) {
+    const modal = document.getElementById('uploadModal')!;
+    const progressFill = document.getElementById('progressFill')!;
+    const progressText = document.getElementById('progressText')!;
+    
+    modal.classList.remove('hidden');
+    
+    let uploaded = 0;
+    const total = files.length;
+    
+    for (const file of Array.from(files)) {
+      // Validate file
+      if (!file.type.startsWith('image/')) {
+        showToast(`${file.name} is not an image`, true);
+        continue;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        showToast(`${file.name} exceeds 5MB limit`, true);
+        continue;
+      }
+      
+      progressText.textContent = `Uploading ${file.name}...`;
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const response = await fetch('/api/images/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          uploaded++;
+          progressFill.style.width = `${(uploaded / total) * 100}%`;
+        } else {
+          const error = await response.json();
+          showToast(`Failed to upload ${file.name}: ${error.message}`, true);
+        }
+      } catch (error) {
+        showToast(`Error uploading ${file.name}`, true);
+      }
+    }
+    
+    modal.classList.add('hidden');
+    progressFill.style.width = '0%';
+    
+    if (uploaded > 0) {
+      showToast(`Uploaded ${uploaded} image(s) successfully!`);
+      setTimeout(() => window.location.reload(), 1500);
+    }
+  }
+  
+  // Copy URL
+  document.querySelectorAll('[data-action="copy"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const url = (btn as HTMLElement).dataset.url!;
+      navigator.clipboard.writeText(url);
+      showToast('URL copied to clipboard!');
+    });
+  });
+  
+  // Delete image
+  document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const name = (btn as HTMLElement).dataset.name!;
+      
+      if (confirm(`Delete "${name}"? This cannot be undone.`)) {
+        try {
+          const response = await fetch('/api/images/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+          });
+          
+          if (response.ok) {
+            showToast('Image deleted!');
+            (btn as HTMLElement).closest('.image-card')?.remove();
+          } else {
+            showToast('Failed to delete image', true);
+          }
+        } catch (error) {
+          showToast('Error deleting image', true);
+        }
+      }
+    });
+  });
+  
+  // Toast notification
+  function showToast(message: string, isError = false) {
+    const toast = document.getElementById('toast')!;
+    const toastMessage = document.getElementById('toastMessage')!;
+    
+    toastMessage.textContent = message;
+    toast.classList.remove('hidden');
+    toast.classList.toggle('error', isError);
+    
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3000);
+  }
+</script>
+
+<style>
+  .images-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .upload-section {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .upload-area {
+    border: 2px dashed #e5e7eb;
+    border-radius: 12px;
+    padding: 50px 30px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .upload-area:hover,
+  .upload-area.dragover {
+    border-color: #c9a227;
+    background: #fffbeb;
+  }
+  
+  .upload-area i {
+    width: 48px;
+    height: 48px;
+    color: #c9a227;
+    margin-bottom: 15px;
+  }
+  
+  .upload-area h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  
+  .upload-area p {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary:hover {
+    background: #2d2d44;
+  }
+  
+  .btn-primary i {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .upload-info {
+    display: flex;
+    gap: 30px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f3f4f6;
+  }
+  
+  .upload-info p {
+    font-size: 13px;
+    color: #6b7280;
+  }
+  
+  .images-section {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .images-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+  }
+  
+  .images-section h2 i {
+    width: 20px;
+    height: 20px;
+    color: #c9a227;
+  }
+  
+  .count {
+    font-size: 12px;
+    background: #e5e7eb;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 400;
+    color: #6b7280;
+  }
+  
+  .badge-readonly {
+    font-size: 11px;
+    background: #fef3c7;
+    color: #d97706;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-left: auto;
+  }
+  
+  .section-desc {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 20px;
+    margin-top: -10px;
+  }
+  
+  .section-desc code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  
+  .image-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s;
+  }
+  
+  .image-card:hover {
+    border-color: #c9a227;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .image-card.readonly {
+    opacity: 0.85;
+  }
+  
+  .image-preview {
+    aspect-ratio: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .image-info {
+    padding: 12px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .image-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  
+  .image-actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .btn-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-icon:hover {
+    background: #d1d5db;
+  }
+  
+  .btn-icon.danger:hover {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .btn-icon i {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+  }
+  
+  .empty-state i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+  
+  .empty-state p {
+    margin-bottom: 5px;
+  }
+  
+  .empty-state .hint {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal.hidden {
+    display: none;
+  }
+  
+  .modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .modal-content h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: #c9a227;
+    width: 0%;
+    transition: width 0.3s;
+  }
+  
+  #progressText {
+    font-size: 14px;
+    color: #6b7280;
+  }
+  
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    background: #1a1a2e;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  
+  .toast.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+  }
+  
+  .toast.error {
+    background: #dc2626;
+  }
+  
+  .toast i {
+    width: 20px;
+    height: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .upload-info {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .images-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
