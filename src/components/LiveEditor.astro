@@ -1,0 +1,645 @@
+---
+// LiveEditor component - only renders for authenticated admins
+import { createServerClient } from '../lib/supabase';
+
+const supabase = createServerClient(Astro.cookies);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+let isAdmin = false;
+
+if (accessToken && refreshToken) {
+  const { data } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  });
+  isAdmin = !!data.session;
+}
+---
+
+{isAdmin && (
+  <!-- Floating UI for popover positioning -->
+  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/dist/floating-ui.dom.umd.min.js"></script>
+
+  <!-- Edit Mode Toggle -->
+  <button id="editModeToggle" class="edit-toggle" title="Toggle Edit Mode">
+    <svg class="icon-edit" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      <path d="m15 5 4 4"/>
+    </svg>
+    <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+    <span class="edit-label">Edit</span>
+  </button>
+
+  <!-- Admin Bar -->
+  <div id="adminBar" class="admin-bar">
+    <div class="admin-bar-left">
+      <span class="admin-badge">✏️ Edit Mode</span>
+      <span class="admin-hint">Click any highlighted text to edit</span>
+    </div>
+    <div class="admin-bar-right">
+      <a href="/admin" class="admin-link">Dashboard</a>
+      <button id="exitEditMode" class="admin-btn">Exit</button>
+    </div>
+  </div>
+
+  <!-- Popover Editor -->
+  <div id="editPopover" class="edit-popover">
+    <div class="popover-header">
+      <code id="popoverKey"></code>
+      <button id="popoverClose" class="popover-close">×</button>
+    </div>
+    <div class="popover-body">
+      <div class="popover-field">
+        <label><span class="flag">🇺🇸</span> English</label>
+        <textarea id="popoverEn" rows="2"></textarea>
+      </div>
+      <div class="popover-field">
+        <label><span class="flag">🇪🇸</span> Spanish</label>
+        <textarea id="popoverEs" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="popover-footer">
+      <button id="popoverCancel" class="popover-btn cancel">Cancel</button>
+      <button id="popoverSave" class="popover-btn save">
+        <span class="save-text">Save</span>
+        <span class="save-loading" style="display:none">Saving...</span>
+      </button>
+    </div>
+    <div class="popover-arrow"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="editToast" class="edit-toast">
+    <span id="editToastMsg">Saved!</span>
+  </div>
+
+  <script is:inline>
+  (function() {
+    const { computePosition, flip, shift, offset, arrow } = FloatingUIDOM;
+    
+    // Elements
+    const toggle = document.getElementById('editModeToggle');
+    const adminBar = document.getElementById('adminBar');
+    const popover = document.getElementById('editPopover');
+    const popoverKey = document.getElementById('popoverKey');
+    const popoverEn = document.getElementById('popoverEn');
+    const popoverEs = document.getElementById('popoverEs');
+    const popoverArrow = popover.querySelector('.popover-arrow');
+    const toast = document.getElementById('editToast');
+    const toastMsg = document.getElementById('editToastMsg');
+    
+    let editMode = false;
+    let currentElement = null;
+    let currentKey = null;
+    
+    // Toggle edit mode
+    function setEditMode(enabled) {
+      editMode = enabled;
+      document.body.classList.toggle('live-edit-mode', enabled);
+      adminBar.classList.toggle('visible', enabled);
+      toggle.querySelector('.icon-edit').style.display = enabled ? 'none' : 'block';
+      toggle.querySelector('.icon-eye').style.display = enabled ? 'block' : 'none';
+      toggle.querySelector('.edit-label').textContent = enabled ? 'Preview' : 'Edit';
+      
+      if (!enabled) {
+        hidePopover();
+      }
+    }
+    
+    toggle.addEventListener('click', () => setEditMode(!editMode));
+    document.getElementById('exitEditMode').addEventListener('click', () => setEditMode(false));
+    
+    // Click on editable elements
+    document.addEventListener('click', (e) => {
+      if (!editMode) return;
+      
+      const target = e.target.closest('[data-i18n]');
+      if (!target) {
+        // Clicked outside - close popover if clicking outside of it
+        if (!popover.contains(e.target) && !toggle.contains(e.target) && !adminBar.contains(e.target)) {
+          hidePopover();
+        }
+        return;
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      showPopover(target);
+    });
+    
+    // Show popover
+    function showPopover(element) {
+      currentElement = element;
+      currentKey = element.getAttribute('data-i18n');
+      
+      // Get current values
+      const translations = window.__TRANSLATIONS__;
+      const [section, ...keyParts] = currentKey.split('.');
+      const key = keyParts.join('.');
+      
+      const getValue = (lang) => {
+        try {
+          return keyParts.reduce((obj, k) => obj?.[k], translations[lang]?.[section]) || element.textContent;
+        } catch {
+          return element.textContent;
+        }
+      };
+      
+      popoverKey.textContent = currentKey;
+      popoverEn.value = getValue('en');
+      popoverEs.value = getValue('es');
+      
+      // Auto-resize textareas
+      [popoverEn, popoverEs].forEach(ta => {
+        ta.style.height = 'auto';
+        ta.style.height = Math.max(60, Math.min(200, ta.scrollHeight)) + 'px';
+      });
+      
+      popover.classList.add('visible');
+      
+      // Position with Floating UI
+      updatePosition();
+    }
+    
+    function updatePosition() {
+      if (!currentElement || !popover.classList.contains('visible')) return;
+      
+      computePosition(currentElement, popover, {
+        placement: 'top',
+        middleware: [
+          offset(12),
+          flip({ fallbackPlacements: ['bottom', 'left', 'right'] }),
+          shift({ padding: 16 }),
+          arrow({ element: popoverArrow })
+        ]
+      }).then(({ x, y, placement, middlewareData }) => {
+        Object.assign(popover.style, {
+          left: `${x}px`,
+          top: `${y}px`
+        });
+        
+        // Position arrow
+        const { x: arrowX, y: arrowY } = middlewareData.arrow || {};
+        const staticSide = {
+          top: 'bottom',
+          right: 'left',
+          bottom: 'top',
+          left: 'right'
+        }[placement.split('-')[0]];
+        
+        Object.assign(popoverArrow.style, {
+          left: arrowX != null ? `${arrowX}px` : '',
+          top: arrowY != null ? `${arrowY}px` : '',
+          right: '',
+          bottom: '',
+          [staticSide]: '-6px'
+        });
+      });
+    }
+    
+    function hidePopover() {
+      popover.classList.remove('visible');
+      currentElement = null;
+      currentKey = null;
+    }
+    
+    // Close button
+    document.getElementById('popoverClose').addEventListener('click', hidePopover);
+    document.getElementById('popoverCancel').addEventListener('click', hidePopover);
+    
+    // Escape key closes popover
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popover.classList.contains('visible')) {
+        hidePopover();
+      }
+    });
+    
+    // Save
+    document.getElementById('popoverSave').addEventListener('click', async () => {
+      const saveBtn = document.getElementById('popoverSave');
+      const saveText = saveBtn.querySelector('.save-text');
+      const saveLoading = saveBtn.querySelector('.save-loading');
+      
+      saveText.style.display = 'none';
+      saveLoading.style.display = 'inline';
+      saveBtn.disabled = true;
+      
+      try {
+        const res = await fetch('/api/content/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            [currentKey]: {
+              en: popoverEn.value,
+              es: popoverEs.value
+            }
+          })
+        });
+        
+        if (res.ok) {
+          // Update displayed text immediately
+          const currentLang = document.documentElement.getAttribute('data-lang') || 'en';
+          const newValue = currentLang === 'en' ? popoverEn.value : popoverEs.value;
+          currentElement.textContent = newValue;
+          
+          // Update global translations
+          const [section, ...keyParts] = currentKey.split('.');
+          ['en', 'es'].forEach(lang => {
+            let obj = window.__TRANSLATIONS__[lang][section];
+            for (let i = 0; i < keyParts.length - 1; i++) {
+              obj = obj[keyParts[i]] = obj[keyParts[i]] || {};
+            }
+            obj[keyParts[keyParts.length - 1]] = lang === 'en' ? popoverEn.value : popoverEs.value;
+          });
+          
+          // Flash success on element
+          currentElement.classList.add('edit-saved');
+          setTimeout(() => currentElement.classList.remove('edit-saved'), 1500);
+          
+          showToast('Saved successfully!', false);
+          hidePopover();
+        } else {
+          showToast('Failed to save', true);
+        }
+      } catch (err) {
+        showToast('Error saving', true);
+      }
+      
+      saveText.style.display = 'inline';
+      saveLoading.style.display = 'none';
+      saveBtn.disabled = false;
+    });
+    
+    // Toast
+    function showToast(msg, isError) {
+      toastMsg.textContent = msg;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 2500);
+    }
+    
+    // Textarea auto-resize
+    [popoverEn, popoverEs].forEach(ta => {
+      ta.addEventListener('input', () => {
+        ta.style.height = 'auto';
+        ta.style.height = Math.max(60, Math.min(200, ta.scrollHeight)) + 'px';
+        updatePosition();
+      });
+    });
+    
+    // Reposition on scroll/resize
+    let ticking = false;
+    const reposition = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updatePosition();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', reposition, true);
+    window.addEventListener('resize', reposition);
+  })();
+  </script>
+
+  <style is:global>
+    /* Edit Mode Toggle Button */
+    .edit-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+    
+    .edit-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+    }
+    
+    /* Admin Bar */
+    .admin-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9997;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+      color: #fff;
+      font-size: 13px;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .admin-bar.visible {
+      transform: translateY(0);
+    }
+    
+    .admin-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .admin-badge {
+      background: rgba(201, 162, 39, 0.2);
+      color: #c9a227;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .admin-hint {
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .admin-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .admin-link {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    
+    .admin-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    
+    .admin-btn {
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .admin-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    /* Edit Mode Styles */
+    body.live-edit-mode {
+      padding-top: 52px;
+    }
+    
+    body.live-edit-mode [data-i18n] {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 4px;
+    }
+    
+    body.live-edit-mode [data-i18n]:hover {
+      outline: 2px dashed rgba(201, 162, 39, 0.6);
+      outline-offset: 4px;
+      background: rgba(201, 162, 39, 0.08);
+    }
+    
+    body.live-edit-mode [data-i18n]::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    
+    [data-i18n].edit-saved {
+      animation: editSavedPulse 0.5s ease;
+    }
+    
+    @keyframes editSavedPulse {
+      0% { background: rgba(16, 185, 129, 0.3); }
+      100% { background: transparent; }
+    }
+    
+    /* Popover */
+    .edit-popover {
+      position: fixed;
+      z-index: 9999;
+      width: 360px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.95);
+      transition: all 0.15s ease;
+    }
+    
+    .edit-popover.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+    
+    .popover-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .popover-header code {
+      font-size: 11px;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    
+    .popover-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #9ca3af;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    
+    .popover-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .popover-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .popover-field label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 6px;
+    }
+    
+    .popover-field .flag {
+      font-size: 14px;
+    }
+    
+    .popover-field textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: none;
+      transition: all 0.15s;
+      box-sizing: border-box;
+    }
+    
+    .popover-field textarea:focus {
+      outline: none;
+      border-color: #c9a227;
+      box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
+    }
+    
+    .popover-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
+      background: #f9fafb;
+      border-radius: 0 0 12px 12px;
+    }
+    
+    .popover-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .popover-btn.cancel {
+      background: #fff;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .popover-btn.cancel:hover {
+      background: #f3f4f6;
+    }
+    
+    .popover-btn.save {
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      min-width: 80px;
+    }
+    
+    .popover-btn.save:hover:not(:disabled) {
+      background: #2d2d44;
+    }
+    
+    .popover-btn.save:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .popover-arrow {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      transform: rotate(45deg);
+      box-shadow: -2px -2px 4px rgba(0,0,0,0.05);
+    }
+    
+    /* Toast */
+    .edit-toast {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      z-index: 10000;
+      padding: 12px 20px;
+      background: #1a1a2e;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+    }
+    
+    .edit-toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .edit-toast.error {
+      background: #dc2626;
+    }
+    
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .edit-popover {
+        width: calc(100vw - 32px);
+        left: 16px !important;
+        right: 16px;
+      }
+      
+      .admin-hint {
+        display: none;
+      }
+      
+      .edit-toggle .edit-label {
+        display: none;
+      }
+      
+      .edit-toggle {
+        padding: 12px;
+        border-radius: 50%;
+      }
+    }
+  </style>
+)}

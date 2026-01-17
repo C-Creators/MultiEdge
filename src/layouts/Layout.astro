@@ -1,5 +1,6 @@
 ---
 import { getTranslations } from '../lib/content';
+import LiveEditor from '../components/LiveEditor.astro';
 
 interface Props {
   title: string;
@@ -64,6 +65,9 @@ const translationsJSON = JSON.stringify(translations);
 
 <body>
   <slot />
+  
+  <!-- Live Editor for admins -->
+  <LiveEditor />
 
   <script>
     // Initialize Lucide icons
