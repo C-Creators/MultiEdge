@@ -251,8 +251,8 @@ export const translations = {
 
     // Calculator
     calculator: {
-      kicker: "ROI PREDICTOR",
-      title: "Snapshot ROI Predictor",
+      kicker: "ROI CALCULATOR",
+      title: "Snapshot ROI Calculator",
       description: "Uses verified snapshot data to project implied weekly, monthly, and yearly returns. Adjust the snapshot period and investment amount to see projections.",
       snapshotGain: "Snapshot:",
       maxDD: "Max DD:",
@@ -532,8 +532,8 @@ export const translations = {
 
     // Calculator
     calculator: {
-      kicker: "PREDICTOR DE ROI",
-      title: "Predictor de ROI de Snapshot",
+      kicker: "CALCULADORA DE ROI",
+      title: "Calculadora de ROI de Snapshot",
       description: "Utiliza datos verificados del snapshot para proyectar retornos implícitos semanales, mensuales y anuales. Ajusta el período y el monto de inversión para ver las proyecciones.",
       snapshotGain: "Snapshot:",
       maxDD: "DD Máx:",
