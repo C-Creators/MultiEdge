@@ -35,11 +35,33 @@ if (accessToken && refreshToken) {
   <div id="adminBar" class="admin-bar">
     <div class="admin-bar-left">
       <span class="admin-badge">✏️ Edit Mode</span>
-      <span class="admin-hint">Click any highlighted text to edit</span>
+      <span class="admin-hint">Click text to edit • Toggle sections below</span>
     </div>
     <div class="admin-bar-right">
+      <button id="toggleSectionsBtn" class="admin-btn sections-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        Sections
+      </button>
       <a href="/admin" class="admin-link">Dashboard</a>
       <button id="exitEditMode" class="admin-btn">Exit</button>
+    </div>
+  </div>
+
+  <!-- Section Visibility Panel -->
+  <div id="sectionsPanel" class="sections-panel">
+    <div class="sections-panel-header">
+      <h4>Section Visibility</h4>
+      <button id="closeSectionsPanel" class="panel-close">×</button>
+    </div>
+    <div class="sections-panel-body" id="sectionsList">
+      <!-- Sections will be populated by JS -->
+    </div>
+    <div class="sections-panel-footer">
+      <button id="showAllSections" class="panel-btn">Show All</button>
+      <button id="saveSectionVisibility" class="panel-btn primary">Save Changes</button>
     </div>
   </div>
 
@@ -88,10 +110,142 @@ if (accessToken && refreshToken) {
   const popoverArrow = popover.querySelector('.popover-arrow');
   const toast = document.getElementById('editToast');
   const toastMsg = document.getElementById('editToastMsg');
+  const sectionsPanel = document.getElementById('sectionsPanel');
+  const sectionsList = document.getElementById('sectionsList');
   
   let editMode = false;
   let currentElement = null;
   let currentKey = null;
+
+  // Section definitions with friendly names
+  const sectionConfig = {
+    'hero': { name: 'Hero', icon: '🏠' },
+    'about': { name: 'About', icon: '📋' },
+    'philosophy': { name: 'Philosophy', icon: '💡' },
+    'systems': { name: 'Systems', icon: '⚙️' },
+    'brokers': { name: 'Brokers', icon: '🏦' },
+    'bot': { name: 'Bot Details', icon: '🤖' },
+    'calculator': { name: 'Calculator', icon: '🧮' },
+    'audience': { name: 'Audience', icon: '👥' },
+    'faq': { name: 'FAQ', icon: '❓' },
+    'final-cta': { name: 'Final CTA', icon: '📢' },
+  };
+
+  // Load section visibility from localStorage
+  function loadSectionVisibility() {
+    const saved = localStorage.getItem('duplifinance-sections');
+    return saved ? JSON.parse(saved) : {};
+  }
+
+  // Save section visibility to localStorage
+  function saveSectionVisibility(visibility) {
+    localStorage.setItem('duplifinance-sections', JSON.stringify(visibility));
+  }
+
+  // Apply section visibility
+  function applySectionVisibility() {
+    const visibility = loadSectionVisibility();
+    Object.entries(visibility).forEach(([sectionId, isVisible]) => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.style.display = isVisible ? '' : 'none';
+        section.dataset.hidden = isVisible ? 'false' : 'true';
+      }
+    });
+  }
+
+  // Initialize section visibility on load
+  applySectionVisibility();
+
+  // Populate sections panel
+  function populateSectionsPanel() {
+    const visibility = loadSectionVisibility();
+    const sections = document.querySelectorAll('section[id]');
+    
+    sectionsList.innerHTML = '';
+    
+    sections.forEach(section => {
+      const id = section.id;
+      const config = sectionConfig[id] || { name: id, icon: '📄' };
+      const isVisible = visibility[id] !== false; // Default to visible
+      
+      const item = document.createElement('div');
+      item.className = 'section-item';
+      item.innerHTML = `
+        <div class="section-item-info">
+          <span class="section-icon">${config.icon}</span>
+          <span class="section-name">${config.name}</span>
+        </div>
+        <button class="visibility-toggle ${isVisible ? 'visible' : 'hidden'}" data-section="${id}">
+          <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg class="eye-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+            <line x1="2" y1="2" x2="22" y2="22"/>
+          </svg>
+        </button>
+      `;
+      sectionsList.appendChild(item);
+    });
+
+    // Add click handlers
+    sectionsList.querySelectorAll('.visibility-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sectionId = btn.dataset.section;
+        const isCurrentlyVisible = btn.classList.contains('visible');
+        btn.classList.toggle('visible', !isCurrentlyVisible);
+        btn.classList.toggle('hidden', isCurrentlyVisible);
+        
+        // Preview the change
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.style.display = isCurrentlyVisible ? 'none' : '';
+          section.dataset.hidden = isCurrentlyVisible ? 'true' : 'false';
+        }
+      });
+    });
+  }
+
+  // Toggle sections panel
+  document.getElementById('toggleSectionsBtn').addEventListener('click', () => {
+    sectionsPanel.classList.toggle('open');
+    if (sectionsPanel.classList.contains('open')) {
+      populateSectionsPanel();
+    }
+  });
+
+  document.getElementById('closeSectionsPanel').addEventListener('click', () => {
+    sectionsPanel.classList.remove('open');
+  });
+
+  // Show all sections
+  document.getElementById('showAllSections').addEventListener('click', () => {
+    sectionsList.querySelectorAll('.visibility-toggle').forEach(btn => {
+      btn.classList.add('visible');
+      btn.classList.remove('hidden');
+      const sectionId = btn.dataset.section;
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.style.display = '';
+        section.dataset.hidden = 'false';
+      }
+    });
+  });
+
+  // Save section visibility
+  document.getElementById('saveSectionVisibility').addEventListener('click', () => {
+    const visibility = {};
+    sectionsList.querySelectorAll('.visibility-toggle').forEach(btn => {
+      visibility[btn.dataset.section] = btn.classList.contains('visible');
+    });
+    saveSectionVisibility(visibility);
+    showToast('Section visibility saved!', false);
+    sectionsPanel.classList.remove('open');
+  });
   
   // Toggle edit mode
   function setEditMode(enabled) {
@@ -403,6 +557,188 @@ if (accessToken && refreshToken) {
     
     .admin-btn:hover {
       background: rgba(255,255,255,0.2);
+    }
+
+    .admin-btn.sections-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .admin-btn.sections-btn svg {
+      opacity: 0.8;
+    }
+
+    /* Sections Panel */
+    .sections-panel {
+      position: fixed;
+      top: 52px;
+      right: 0;
+      width: 320px;
+      max-height: calc(100vh - 72px);
+      background: #fff;
+      border-radius: 0 0 0 12px;
+      box-shadow: -4px 4px 20px rgba(0,0,0,0.15);
+      z-index: 9996;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sections-panel.open {
+      transform: translateX(0);
+    }
+
+    .sections-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .sections-panel-header h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    .panel-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #9ca3af;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .panel-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .sections-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .section-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      background: #f9fafb;
+      transition: background 0.15s;
+    }
+
+    .section-item:hover {
+      background: #f3f4f6;
+    }
+
+    .section-item-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-icon {
+      font-size: 16px;
+    }
+
+    .section-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .visibility-toggle {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .visibility-toggle:hover {
+      background: #fff;
+      border-color: #d1d5db;
+    }
+
+    .visibility-toggle.visible {
+      color: #10b981;
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .visibility-toggle.hidden {
+      color: #9ca3af;
+      background: #f3f4f6;
+    }
+
+    .visibility-toggle .eye-open {
+      display: block;
+    }
+
+    .visibility-toggle .eye-closed {
+      display: none;
+    }
+
+    .visibility-toggle.hidden .eye-open {
+      display: none;
+    }
+
+    .visibility-toggle.hidden .eye-closed {
+      display: block;
+    }
+
+    .sections-panel-footer {
+      display: flex;
+      gap: 10px;
+      padding: 14px 18px;
+      border-top: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .panel-btn {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: #fff;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+
+    .panel-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .panel-btn.primary {
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+    }
+
+    .panel-btn.primary:hover {
+      background: #2d2d44;
     }
     
     /* Edit Mode Styles */
