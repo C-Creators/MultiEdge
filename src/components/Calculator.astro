@@ -10,10 +10,10 @@
           <i data-lucide="calculator" style="width:16px;height:16px"></i>
           <span data-i18n="calculator.kicker">ROI CALCULATOR</span>
         </div>
-        <h3 data-i18n="calculator.title">Snapshot ROI Calculator</h3>
+        <h3 data-i18n="calculator.title">Bot ROI Calculator</h3>
       </div>
       <p data-i18n="calculator.description">
-        Uses verified snapshot data to project implied weekly, monthly, and yearly returns. Adjust the snapshot period and investment amount to see projections.
+        Uses verified bot data to project implied weekly, monthly, and yearly returns. Adjust the period and investment amount to see projections.
       </p>
     </div>
 
@@ -22,7 +22,7 @@
       <div class="calc-header">
         <div class="calc-pills">
           <div class="calc-pill">
-            <span class="pill-label" data-i18n="calculator.snapshotGain">Snapshot:</span>
+            <span class="pill-label" data-i18n="calculator.botGain">Bot:</span>
             <span class="pill-value">+264.40%</span>
           </div>
           <div class="calc-pill">
@@ -69,12 +69,12 @@
           <!-- Period Slider -->
           <div class="calc-panel">
             <div class="calc-range-header">
-              <span class="calc-label" data-i18n="calculator.periodLabel">Snapshot period (months)</span>
+              <span class="calc-label" data-i18n="calculator.periodLabel">Period (months)</span>
               <span class="calc-value"><span id="calcMonthsVal">6</span> <span data-i18n="calculator.months">mo</span></span>
             </div>
             <input id="calcMonthsRange" type="range" min="1" max="24" step="1" value="6" />
             <div class="calc-helper" data-i18n="calculator.periodHelper">
-              Default is 6 months. Adjust based on actual snapshot duration for accurate projections.
+              Default is 6 months. Adjust based on actual bot performance duration for accurate projections.
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@
         <!-- Summary Row -->
         <div class="calc-summary">
           <div class="summary-item">
-            <div class="calc-label" data-i18n="calculator.fullPeriod">Snapshot result over full period</div>
+            <div class="calc-label" data-i18n="calculator.fullPeriod">Bot result over full period</div>
             <div class="summary-value">
               <span id="calcFullEnd">€0.00</span>
               <span class="summary-sub" id="calcFullProfit">(profit €0.00)</span>
@@ -132,7 +132,7 @@
         <div class="calc-disclaimer">
           <i data-lucide="alert-triangle" style="width:16px;height:16px"></i>
           <p data-i18n="calculator.disclaimer">
-            These are projections derived from one snapshot. Real results can differ due to fees, slippage, spreads, copy delays, and changing market conditions. Past performance is not a guarantee.
+            These are projections derived from bot performance data. Real results can differ due to fees, slippage, spreads, copy delays, and changing market conditions. Past performance is not a guarantee.
           </p>
         </div>
 
@@ -141,7 +141,7 @@
           <summary data-i18n="calculator.howItWorks">How the math works</summary>
           <div class="details-content">
             <p data-i18n="calculator.mathExplanation">
-              We treat the snapshot gain (+264.40%) as the total growth factor over the selected period. From that we derive:
+              We treat the bot gain (+264.40%) as the total growth factor over the selected period. From that we derive:
             </p>
             <ul>
               <li data-i18n="calculator.mathMonthly">Monthly factor: totalFactor^(1/months)</li>
@@ -158,8 +158,8 @@
 <script>
   // Calculator Logic
   document.addEventListener('DOMContentLoaded', () => {
-    const SNAPSHOT_GAIN_PCT = 264.40;
-    const SNAPSHOT_MAX_DD_PCT = 5.46;
+    const BOT_GAIN_PCT = 264.40;
+    const BOT_MAX_DD_PCT = 5.46;
 
     const els = {
       principal: document.getElementById('calcPrincipal') as HTMLInputElement,
@@ -205,7 +205,7 @@
 
       els.monthsVal.textContent = String(months);
 
-      const totalFactor = 1 + (SNAPSHOT_GAIN_PCT / 100);
+      const totalFactor = 1 + (BOT_GAIN_PCT / 100);
       const monthlyFactor = Math.pow(totalFactor, 1 / months);
       const monthlyR = monthlyFactor - 1;
 
@@ -220,7 +220,7 @@
       const endMonth = P * monthlyFactor;
       const endYear = P * yearlyFactor;
       const endFull = P * totalFactor;
-      const ddAmt = endFull * (SNAPSHOT_MAX_DD_PCT / 100);
+      const ddAmt = endFull * (BOT_MAX_DD_PCT / 100);
 
       els.wkRoi.textContent = fmtPct(weeklyR);
       els.moRoi.textContent = fmtPct(monthlyR);
