@@ -1,5 +1,5 @@
 ---
-// ROI Calculator Component - matches Duplifinance style
+// Simple ROI Calculator Component
 ---
 
 <section id="calculator" class="calculator-section">
@@ -10,282 +10,170 @@
           <i data-lucide="calculator" style="width:16px;height:16px"></i>
           <span data-i18n="calculator.kicker">ROI CALCULATOR</span>
         </div>
-        <h3 data-i18n="calculator.title">Bot ROI Calculator</h3>
+        <h3 data-i18n="calculator.title">Estimate Your Returns</h3>
       </div>
       <p data-i18n="calculator.description">
-        Uses verified bot data to project implied weekly, monthly, and yearly returns. Adjust the period and investment amount to see projections.
+        Our bot generates 3-10% monthly returns. Enter your investment to see potential results.
       </p>
     </div>
 
     <div class="calc-card reveal">
-      <!-- Header Pills -->
-      <div class="calc-header">
-        <div class="calc-pills">
-          <div class="calc-pill">
-            <span class="pill-label" data-i18n="calculator.botGain">Bot:</span>
-            <span class="pill-value">+264.40%</span>
-          </div>
-          <div class="calc-pill">
-            <span class="pill-label" data-i18n="calculator.maxDD">Max DD:</span>
-            <span class="pill-value">5.46%</span>
-          </div>
-          <div class="calc-pill">
-            <span class="pill-label" data-i18n="calculator.platform">Platform:</span>
-            <span class="pill-value">MetaTrader 5</span>
-          </div>
-          <div class="calc-pill">
-            <span class="pill-label" data-i18n="calculator.leverage">Leverage:</span>
-            <span class="pill-value">1:500</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Controls -->
       <div class="calc-body">
-        <div class="calc-controls">
-          <!-- Investment Input -->
-          <div class="calc-panel">
-            <label for="calcPrincipal" data-i18n="calculator.investmentLabel">Your investment</label>
-            <input id="calcPrincipal" type="number" min="0" step="10" placeholder="1000" value="1000" />
-            <div class="calc-helper" data-i18n="calculator.investmentHelper">
-              Currency toggle changes symbols only (no FX conversion).
-            </div>
-
-            <div class="calc-currency-row">
-              <div>
-                <div class="calc-label" data-i18n="calculator.currency">Currency</div>
-                <div class="calc-value" id="calcCurLabel">EUR</div>
-              </div>
-              <button type="button" class="calc-toggle" id="calcCurToggle" data-currency="EUR" aria-label="Toggle currency">
-                <span class="toggle-knob"></span>
-                <span class="toggle-labels">
-                  <span>EUR</span>
-                  <span>USD</span>
-                </span>
-              </button>
-            </div>
+        <!-- Investment Input -->
+        <div class="calc-input-section">
+          <label for="calcPrincipal" data-i18n="calculator.investmentLabel">Your investment</label>
+          <div class="calc-input-wrapper">
+            <span class="calc-currency-symbol" id="calcSymbol">$</span>
+            <input id="calcPrincipal" type="number" min="100" step="100" placeholder="1000" value="1000" />
           </div>
-
-          <!-- Period Slider -->
-          <div class="calc-panel">
-            <div class="calc-range-header">
-              <span class="calc-label" data-i18n="calculator.periodLabel">Period (months)</span>
-              <span class="calc-value"><span id="calcMonthsVal">6</span> <span data-i18n="calculator.months">mo</span></span>
-            </div>
-            <input id="calcMonthsRange" type="range" min="1" max="24" step="1" value="6" />
-            <div class="calc-helper" data-i18n="calculator.periodHelper">
-              Default is 6 months. Adjust based on actual bot performance duration for accurate projections.
-            </div>
+          <div class="calc-currency-toggle">
+            <button type="button" class="currency-btn active" data-currency="USD">USD</button>
+            <button type="button" class="currency-btn" data-currency="EUR">EUR</button>
           </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="calc-stats">
-          <div class="calc-stat">
-            <div class="stat-value" id="calcWkRoi">0.00%</div>
-            <div class="stat-label" data-i18n="calculator.weeklyROI">Implied Weekly ROI</div>
-            <div class="stat-detail" id="calcWkProfit"></div>
-          </div>
-          <div class="calc-stat">
-            <div class="stat-value" id="calcMoRoi">0.00%</div>
-            <div class="stat-label" data-i18n="calculator.monthlyROI">Implied Monthly ROI</div>
-            <div class="stat-detail" id="calcMoProfit"></div>
-          </div>
-          <div class="calc-stat highlight">
-            <div class="stat-value" id="calcYrRoi">0.00%</div>
-            <div class="stat-label" data-i18n="calculator.yearlyROI">Implied Yearly ROI (CAGR)</div>
-            <div class="stat-detail" id="calcYrProfit"></div>
-          </div>
-        </div>
-
-        <!-- Summary Row -->
-        <div class="calc-summary">
-          <div class="summary-item">
-            <div class="calc-label" data-i18n="calculator.fullPeriod">Bot result over full period</div>
-            <div class="summary-value">
-              <span id="calcFullEnd">€0.00</span>
-              <span class="summary-sub" id="calcFullProfit">(profit €0.00)</span>
-            </div>
-          </div>
-          <div class="summary-item">
-            <div class="calc-label" data-i18n="calculator.maxDrawdown">Max drawdown (from peak)</div>
-            <div class="summary-value">
-              <span id="calcDdAmt">€0.00</span>
-              <span class="summary-sub">@ 5.46%</span>
-            </div>
+        <!-- Period Selection -->
+        <div class="calc-period-section">
+          <label data-i18n="calculator.periodLabel">Investment period</label>
+          <div class="calc-period-buttons">
+            <button type="button" class="period-btn" data-months="6">
+              <span class="period-value">6</span>
+              <span class="period-unit" data-i18n="calculator.monthsLabel">months</span>
+            </button>
+            <button type="button" class="period-btn active" data-months="12">
+              <span class="period-value">1</span>
+              <span class="period-unit" data-i18n="calculator.yearLabel">year</span>
+            </button>
+            <button type="button" class="period-btn" data-months="24">
+              <span class="period-value">2</span>
+              <span class="period-unit" data-i18n="calculator.yearsLabel">years</span>
+            </button>
           </div>
         </div>
 
-        <!-- Buttons -->
-        <div class="calc-actions">
-          <button type="button" class="btn btn-primary" id="calcSaveBtn">
-            <i data-lucide="save" style="width:16px;height:16px"></i>
-            <span data-i18n="calculator.save">Save inputs</span>
-          </button>
-          <button type="button" class="btn btn-outline" id="calcResetBtn">
-            <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i>
-            <span data-i18n="calculator.reset">Reset</span>
-          </button>
+        <!-- Results -->
+        <div class="calc-results">
+          <div class="calc-result conservative">
+            <div class="result-header">
+              <span class="result-icon">🛡️</span>
+              <span class="result-title" data-i18n="calculator.conservative">Conservative</span>
+              <span class="result-rate">3% <span data-i18n="calculator.perMonth">/month</span></span>
+            </div>
+            <div class="result-value" id="resultConservative">$1,000</div>
+            <div class="result-profit" id="profitConservative">+$0 profit</div>
+          </div>
+          
+          <div class="calc-result average highlight">
+            <div class="result-header">
+              <span class="result-icon">⚖️</span>
+              <span class="result-title" data-i18n="calculator.average">Average</span>
+              <span class="result-rate">6.5% <span data-i18n="calculator.perMonth">/month</span></span>
+            </div>
+            <div class="result-value" id="resultAverage">$1,000</div>
+            <div class="result-profit" id="profitAverage">+$0 profit</div>
+          </div>
+          
+          <div class="calc-result optimistic">
+            <div class="result-header">
+              <span class="result-icon">🚀</span>
+              <span class="result-title" data-i18n="calculator.optimistic">Optimistic</span>
+              <span class="result-rate">10% <span data-i18n="calculator.perMonth">/month</span></span>
+            </div>
+            <div class="result-value" id="resultOptimistic">$1,000</div>
+            <div class="result-profit" id="profitOptimistic">+$0 profit</div>
+          </div>
         </div>
 
         <!-- Disclaimer -->
         <div class="calc-disclaimer">
-          <i data-lucide="alert-triangle" style="width:16px;height:16px"></i>
+          <i data-lucide="info" style="width:16px;height:16px"></i>
           <p data-i18n="calculator.disclaimer">
-            These are projections derived from bot performance data. Real results can differ due to fees, slippage, spreads, copy delays, and changing market conditions. Past performance is not a guarantee.
+            These are projections based on historical performance. Actual results may vary. Past performance does not guarantee future results.
           </p>
         </div>
-
-        <!-- Expandable Details -->
-        <details class="calc-details">
-          <summary data-i18n="calculator.howItWorks">How the math works</summary>
-          <div class="details-content">
-            <p data-i18n="calculator.mathExplanation">
-              We treat the bot gain (+264.40%) as the total growth factor over the selected period. From that we derive:
-            </p>
-            <ul>
-              <li data-i18n="calculator.mathMonthly">Monthly factor: totalFactor^(1/months)</li>
-              <li data-i18n="calculator.mathWeekly">Weekly factor: monthlyFactor^(1/(52/12))</li>
-              <li data-i18n="calculator.mathYearly">Yearly factor (CAGR): totalFactor^(12/months)</li>
-            </ul>
-          </div>
-        </details>
       </div>
     </div>
   </div>
 </section>
 
 <script>
-  // Calculator Logic
   document.addEventListener('DOMContentLoaded', () => {
-    const BOT_GAIN_PCT = 264.40;
-    const BOT_MAX_DD_PCT = 5.46;
-
     const els = {
       principal: document.getElementById('calcPrincipal') as HTMLInputElement,
-      monthsRange: document.getElementById('calcMonthsRange') as HTMLInputElement,
-      monthsVal: document.getElementById('calcMonthsVal')!,
-      wkRoi: document.getElementById('calcWkRoi')!,
-      moRoi: document.getElementById('calcMoRoi')!,
-      yrRoi: document.getElementById('calcYrRoi')!,
-      wkProfit: document.getElementById('calcWkProfit')!,
-      moProfit: document.getElementById('calcMoProfit')!,
-      yrProfit: document.getElementById('calcYrProfit')!,
-      fullEnd: document.getElementById('calcFullEnd')!,
-      fullProfit: document.getElementById('calcFullProfit')!,
-      ddAmt: document.getElementById('calcDdAmt')!,
-      curToggle: document.getElementById('calcCurToggle')!,
-      curLabel: document.getElementById('calcCurLabel')!,
-      saveBtn: document.getElementById('calcSaveBtn')!,
-      resetBtn: document.getElementById('calcResetBtn')!,
+      symbol: document.getElementById('calcSymbol')!,
+      resultConservative: document.getElementById('resultConservative')!,
+      resultAverage: document.getElementById('resultAverage')!,
+      resultOptimistic: document.getElementById('resultOptimistic')!,
+      profitConservative: document.getElementById('profitConservative')!,
+      profitAverage: document.getElementById('profitAverage')!,
+      profitOptimistic: document.getElementById('profitOptimistic')!,
     };
 
-    let currency = 'EUR';
+    let currency = 'USD';
+    let months = 12;
 
     const symbol = () => currency === 'USD' ? '$' : '€';
 
     const fmtMoney = (n: number) => {
-      n = isFinite(n) ? n : 0;
-      return symbol() + new Intl.NumberFormat(undefined, { 
-        maximumFractionDigits: 2, 
-        minimumFractionDigits: 2 
-      }).format(n);
+      return symbol() + new Intl.NumberFormat('en-US', { 
+        maximumFractionDigits: 0, 
+        minimumFractionDigits: 0 
+      }).format(Math.round(n));
     };
 
-    const fmtPct = (n: number) => (isFinite(n) ? (n * 100) : 0).toFixed(2) + '%';
-
-    // Get translations for profit/end labels
     const getLang = () => document.documentElement.getAttribute('data-lang') || 'en';
-    const profitLabel = () => getLang() === 'es' ? 'Beneficio' : 'Profit';
-    const endLabel = () => getLang() === 'es' ? 'Final' : 'End';
+    const profitLabel = () => getLang() === 'es' ? 'ganancia' : 'profit';
 
-    function recalc() {
+    function calculate() {
       const P = Math.max(0, parseFloat(els.principal.value || '0'));
-      const months = Math.max(1, parseFloat(els.monthsRange.value || '1'));
+      
+      // Monthly rates
+      const rateConservative = 0.03; // 3%
+      const rateAverage = 0.065;     // 6.5%
+      const rateOptimistic = 0.10;   // 10%
 
-      els.monthsVal.textContent = String(months);
+      // Compound interest: P * (1 + r)^n
+      const endConservative = P * Math.pow(1 + rateConservative, months);
+      const endAverage = P * Math.pow(1 + rateAverage, months);
+      const endOptimistic = P * Math.pow(1 + rateOptimistic, months);
 
-      const totalFactor = 1 + (BOT_GAIN_PCT / 100);
-      const monthlyFactor = Math.pow(totalFactor, 1 / months);
-      const monthlyR = monthlyFactor - 1;
+      // Update UI
+      els.symbol.textContent = symbol();
+      
+      els.resultConservative.textContent = fmtMoney(endConservative);
+      els.resultAverage.textContent = fmtMoney(endAverage);
+      els.resultOptimistic.textContent = fmtMoney(endOptimistic);
 
-      const weeksPerMonth = 52 / 12;
-      const weeklyFactor = Math.pow(monthlyFactor, 1 / weeksPerMonth);
-      const weeklyR = weeklyFactor - 1;
-
-      const yearlyFactor = Math.pow(totalFactor, 12 / months);
-      const yearlyR = yearlyFactor - 1;
-
-      const endWeek = P * weeklyFactor;
-      const endMonth = P * monthlyFactor;
-      const endYear = P * yearlyFactor;
-      const endFull = P * totalFactor;
-      const ddAmt = endFull * (BOT_MAX_DD_PCT / 100);
-
-      els.wkRoi.textContent = fmtPct(weeklyR);
-      els.moRoi.textContent = fmtPct(monthlyR);
-      els.yrRoi.textContent = fmtPct(yearlyR);
-
-      els.wkProfit.textContent = `${profitLabel()}: ${fmtMoney(endWeek - P)} • ${endLabel()}: ${fmtMoney(endWeek)}`;
-      els.moProfit.textContent = `${profitLabel()}: ${fmtMoney(endMonth - P)} • ${endLabel()}: ${fmtMoney(endMonth)}`;
-      els.yrProfit.textContent = `${profitLabel()}: ${fmtMoney(endYear - P)} • ${endLabel()}: ${fmtMoney(endYear)}`;
-
-      els.fullEnd.textContent = fmtMoney(endFull);
-      els.fullProfit.textContent = `(${profitLabel().toLowerCase()} ${fmtMoney(endFull - P)})`;
-      els.ddAmt.textContent = fmtMoney(ddAmt);
-      els.curLabel.textContent = currency;
+      els.profitConservative.textContent = `+${fmtMoney(endConservative - P)} ${profitLabel()}`;
+      els.profitAverage.textContent = `+${fmtMoney(endAverage - P)} ${profitLabel()}`;
+      els.profitOptimistic.textContent = `+${fmtMoney(endOptimistic - P)} ${profitLabel()}`;
     }
 
-    function toggleCurrency() {
-      currency = currency === 'EUR' ? 'USD' : 'EUR';
-      els.curToggle.dataset.currency = currency;
-      recalc();
-    }
+    // Currency buttons
+    document.querySelectorAll('.currency-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currency = (btn as HTMLElement).dataset.currency || 'USD';
+        calculate();
+      });
+    });
 
-    function save() {
-      localStorage.setItem('duplifinance-calc', JSON.stringify({
-        principal: els.principal.value || '1000',
-        months: els.monthsRange.value || '6',
-        currency
-      }));
-      const saveText = els.saveBtn.querySelector('span')!;
-      const originalText = saveText.textContent;
-      saveText.textContent = '✓';
-      setTimeout(() => saveText.textContent = originalText, 900);
-    }
+    // Period buttons
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        months = parseInt((btn as HTMLElement).dataset.months || '12');
+        calculate();
+      });
+    });
 
-    function load() {
-      const raw = localStorage.getItem('duplifinance-calc');
-      if (!raw) return false;
-      try {
-        const d = JSON.parse(raw);
-        if (d.principal) els.principal.value = d.principal;
-        if (d.months) els.monthsRange.value = d.months;
-        if (d.currency === 'USD' || d.currency === 'EUR') currency = d.currency;
-        els.curToggle.dataset.currency = currency;
-        return true;
-      } catch { return false; }
-    }
+    // Input event
+    els.principal.addEventListener('input', calculate);
 
-    function reset() {
-      els.principal.value = '1000';
-      els.monthsRange.value = '6';
-      currency = 'EUR';
-      els.curToggle.dataset.currency = currency;
-      localStorage.removeItem('duplifinance-calc');
-      recalc();
-    }
-
-    // Events
-    els.principal.addEventListener('input', recalc);
-    els.monthsRange.addEventListener('input', recalc);
-    els.curToggle.addEventListener('click', toggleCurrency);
-    els.saveBtn.addEventListener('click', save);
-    els.resetBtn.addEventListener('click', reset);
-
-    // Init
-    if (!load()) reset();
-    recalc();
+    // Initial calculation
+    calculate();
   });
 </script>
 
@@ -301,325 +189,229 @@
     box-shadow: var(--shadow);
     overflow: hidden;
     backdrop-filter: blur(12px);
-  }
-
-  .calc-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--stroke);
-    background: rgba(196, 233, 174, 0.04);
-  }
-
-  .calc-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .calc-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    background: var(--card2);
-    border: 1px solid var(--stroke);
-    border-radius: 100px;
-    font-size: 13px;
-  }
-
-  .pill-label {
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .pill-value {
-    color: var(--text);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
+    max-width: 700px;
+    margin: 0 auto;
   }
 
   .calc-body {
-    padding: 24px;
+    padding: 32px;
   }
 
-  .calc-controls {
-    display: grid;
-    grid-template-columns: 1fr 1.3fr;
-    gap: 18px;
-    margin-bottom: 24px;
-  }
-
-  @media (max-width: 768px) {
-    .calc-controls {
-      grid-template-columns: 1fr;
+  @media (max-width: 520px) {
+    .calc-body {
+      padding: 24px 20px;
     }
   }
 
-  .calc-panel {
-    padding: 18px;
-    background: var(--card2);
-    border: 1px solid var(--stroke);
-    border-radius: var(--radius-lg);
+  /* Input Section */
+  .calc-input-section {
+    margin-bottom: 28px;
   }
 
-  .calc-panel label {
+  .calc-input-section label {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--muted);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
-  .calc-panel input[type="number"] {
+  .calc-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .calc-currency-symbol {
+    position: absolute;
+    left: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .calc-input-wrapper input {
     width: 100%;
-    padding: 14px 16px;
-    background: var(--bg);
-    border: 1px solid var(--stroke2);
-    border-radius: var(--radius-md);
+    padding: 18px 18px 18px 44px;
+    background: var(--card2);
+    border: 2px solid var(--stroke);
+    border-radius: var(--radius-lg);
     color: var(--text);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
 
-  .calc-panel input[type="number"]:focus {
+  .calc-input-wrapper input:focus {
     border-color: var(--brand);
     box-shadow: var(--focus);
   }
 
-  .calc-panel input[type="range"] {
-    width: 100%;
-    height: 8px;
-    border-radius: 4px;
-    background: var(--stroke);
-    appearance: none;
-    cursor: pointer;
-  }
-
-  .calc-panel input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 22px;
-    height: 22px;
-    background: linear-gradient(135deg, var(--brand), var(--brand2));
-    border-radius: 50%;
-    border: 3px solid var(--bg);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    cursor: grab;
-  }
-
-  .calc-panel input[type="range"]::-webkit-slider-thumb:active {
-    cursor: grabbing;
-  }
-
-  .calc-helper {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--muted2);
-    line-height: 1.4;
-  }
-
-  .calc-range-header {
+  .calc-currency-toggle {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    gap: 8px;
+    margin-top: 12px;
   }
 
-  .calc-label {
-    font-size: 12px;
+  .currency-btn {
+    padding: 8px 16px;
+    background: var(--card2);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-md);
     color: var(--muted);
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
   }
 
-  .calc-value {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .calc-currency-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px solid var(--stroke);
-  }
-
-  .calc-toggle {
-    position: relative;
-    width: 100px;
-    height: 38px;
-    padding: 4px;
+  .currency-btn:hover {
     background: var(--bg);
-    border: 1px solid var(--stroke2);
-    border-radius: 100px;
-    cursor: pointer;
-    overflow: hidden;
+    border-color: var(--stroke2);
   }
 
-  .toggle-knob {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 46px;
-    height: 30px;
+  .currency-btn.active {
     background: linear-gradient(135deg, var(--brand), var(--brand2));
-    border-radius: 100px;
-    transition: transform 0.2s ease;
-  }
-
-  .calc-toggle[data-currency="USD"] .toggle-knob {
-    transform: translateX(46px);
-  }
-
-  .toggle-labels {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 12px;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 30px;
-  }
-
-  .toggle-labels span {
-    color: var(--muted);
-    transition: color 0.2s;
-  }
-
-  .calc-toggle[data-currency="EUR"] .toggle-labels span:first-child,
-  .calc-toggle[data-currency="USD"] .toggle-labels span:last-child {
+    border-color: transparent;
     color: var(--bg);
   }
 
-  .calc-stats {
+  /* Period Section */
+  .calc-period-section {
+    margin-bottom: 28px;
+  }
+
+  .calc-period-section label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .calc-period-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .period-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    background: var(--card2);
+    border: 2px solid var(--stroke);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .period-btn:hover {
+    background: var(--bg);
+    border-color: var(--stroke2);
+  }
+
+  .period-btn.active {
+    background: linear-gradient(135deg, rgba(196, 233, 174, 0.15), rgba(196, 233, 174, 0.05));
+    border-color: var(--brand);
+  }
+
+  .period-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .period-btn.active .period-value {
+    color: var(--brand);
+  }
+
+  .period-unit {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Results */
+  .calc-results {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
-  @media (max-width: 768px) {
-    .calc-stats {
+  @media (max-width: 600px) {
+    .calc-results {
       grid-template-columns: 1fr;
     }
   }
 
-  .calc-stat {
-    padding: 18px;
+  .calc-result {
+    padding: 20px 16px;
     background: var(--card2);
     border: 1px solid var(--stroke);
     border-radius: var(--radius-lg);
     text-align: center;
   }
 
-  .calc-stat.highlight {
+  .calc-result.highlight {
     background: linear-gradient(135deg, rgba(196, 233, 174, 0.12), rgba(196, 233, 174, 0.04));
-    border-color: rgba(196, 233, 174, 0.25);
+    border-color: rgba(196, 233, 174, 0.3);
+    position: relative;
   }
 
-  .stat-value {
-    font-size: 26px;
+  .result-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .result-icon {
+    font-size: 20px;
+  }
+
+  .result-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .result-rate {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .result-value {
+    font-size: 28px;
     font-weight: 800;
     color: var(--brand);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.5px;
   }
 
-  .stat-label {
-    margin-top: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .calc-result.highlight .result-value {
+    font-size: 32px;
   }
 
-  .stat-detail {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--muted2);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .calc-summary {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 16px 18px;
-    background: var(--card2);
-    border: 1px solid var(--stroke);
-    border-radius: var(--radius-md);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-
-  .summary-item {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .summary-value {
-    margin-top: 6px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .summary-sub {
-    margin-left: 6px;
+  .result-profit {
+    margin-top: 8px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--muted);
   }
 
-  .calc-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  .calc-actions .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .calc-actions .btn-primary {
-    background: linear-gradient(135deg, var(--brand), var(--brand2));
-    color: var(--bg);
-    border: none;
-  }
-
-  .calc-actions .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(30, 56, 58, 0.25);
-  }
-
-  .calc-actions .btn-outline {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--stroke2);
-  }
-
-  .calc-actions .btn-outline:hover {
-    background: var(--card2);
-    border-color: var(--stroke);
-  }
-
+  /* Disclaimer */
   .calc-disclaimer {
     display: flex;
     gap: 12px;
@@ -627,7 +419,6 @@
     background: rgba(201, 162, 39, 0.08);
     border: 1px solid rgba(201, 162, 39, 0.20);
     border-radius: var(--radius-md);
-    margin-bottom: 16px;
   }
 
   .calc-disclaimer i {
@@ -637,64 +428,18 @@
 
   .calc-disclaimer p {
     margin: 0;
-    font-size: 12.5px;
-    line-height: 1.5;
-    color: var(--muted);
-  }
-
-  .calc-details {
-    background: var(--card2);
-    border: 1px solid var(--stroke);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-  }
-
-  .calc-details summary {
-    padding: 14px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .calc-details summary:hover {
-    background: var(--bg);
-  }
-
-  .calc-details[open] summary {
-    border-bottom: 1px solid var(--stroke);
-  }
-
-  .details-content {
-    padding: 16px 18px;
-    font-size: 13px;
-    color: var(--muted2);
-    line-height: 1.5;
-  }
-
-  .details-content p {
-    margin: 0 0 12px;
-  }
-
-  .details-content ul {
-    margin: 0;
-    padding-left: 20px;
-  }
-
-  .details-content li {
-    margin-bottom: 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 12px;
+    line-height: 1.5;
+    color: var(--muted);
   }
 
-  /* Dark mode adjustments */
-  [data-theme="dark"] .calc-toggle[data-currency="EUR"] .toggle-labels span:first-child,
-  [data-theme="dark"] .calc-toggle[data-currency="USD"] .toggle-labels span:last-child {
-    color: var(--text);
-  }
-
-  [data-theme="dark"] .calc-actions .btn-primary {
+  /* Dark mode */
+  [data-theme="dark"] .currency-btn.active,
+  [data-theme="dark"] .period-btn.active .period-value {
     color: #0b1415;
+  }
+
+  [data-theme="dark"] .currency-btn.active {
+    color: var(--bg);
   }
 </style>
