@@ -21,7 +21,7 @@ const botMetrics: Metric[] = [
   { label: "Avg. Loss", labelKey: "bot.metricAvgLoss", value: "-104.55 pips / -€26.25" },
 ];
 
-const summaryLabels = ["Absolute Gain", "Max Drawdown", "Profit Factor", "Win Rate", "Total Trades", "Current Balance / Equity"];
+const summaryLabels = ["Absolute Gain", "Max Drawdown", "Profit Factor", "Win Rate", "Total Trades"];
 const summaryMetrics = botMetrics.filter(m => summaryLabels.includes(m.label));
 ---
 

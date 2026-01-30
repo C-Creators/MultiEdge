@@ -127,14 +127,37 @@
             Register on our copy trading platform to connect your broker account and start copying our automated strategies.
           </p>
 
-          <button 
+          <!-- Platform Toggle -->
+          <div class="broker-toggle">
+            <button class="broker-toggle-btn active" data-platform="dooprime">
+              <span>Doo Prime</span>
+            </button>
+            <button class="broker-toggle-btn" data-platform="cgtrade">
+              <span>CGTrade <small data-i18n="register.usClients">(US Clients)</small></span>
+            </button>
+          </div>
+
+          <a 
             class="btn btn-primary step-btn" 
-            disabled
-            style="opacity: 0.6; cursor: not-allowed;"
+            id="platform-btn-dooprime"
+            href="https://live.dpflexiblecopytrading.com/auth/register?type=copier&regtype=real&OfferID=80666404-8eab-4294-ab5c-332584d0ab94" 
+            target="_blank" 
+            rel="noopener noreferrer"
           >
-            <i data-lucide="clock"></i>
-            <span>Coming Soon</span>
-          </button>
+            <i data-lucide="external-link"></i>
+            <span data-i18n="register.step2BtnDooprime">Connect with Doo Prime</span>
+          </a>
+
+          <a 
+            class="btn btn-primary step-btn hidden" 
+            id="platform-btn-cgtrade"
+            href="https://live.cgcopytrading.com/portal/registration/subscription/83562/gold50JD" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <i data-lucide="external-link"></i>
+            <span data-i18n="register.step2BtnCgtrade">Connect with CGTrade</span>
+          </a>
         </div>
       </div>
 
@@ -600,12 +623,17 @@
     // Find all CTA buttons that should open the modal
     const ctaButtons = document.querySelectorAll('[data-open-register]');
 
-    // Broker toggle elements
-    const brokerToggleBtns = document.querySelectorAll('.broker-toggle-btn');
+    // Broker toggle elements (Step 1)
+    const brokerToggleBtns = document.querySelectorAll('.broker-toggle-btn[data-broker]');
     const brokerCardDooprime = document.getElementById('broker-dooprime');
     const brokerCardCgtrade = document.getElementById('broker-cgtrade');
     const brokerBtnDooprime = document.getElementById('broker-btn-dooprime');
     const brokerBtnCgtrade = document.getElementById('broker-btn-cgtrade');
+
+    // Platform toggle elements (Step 2)
+    const platformToggleBtns = document.querySelectorAll('.broker-toggle-btn[data-platform]');
+    const platformBtnDooprime = document.getElementById('platform-btn-dooprime');
+    const platformBtnCgtrade = document.getElementById('platform-btn-cgtrade');
 
     function openModal() {
       if (!modal) return;
@@ -652,11 +680,39 @@
       }
     }
 
-    // Broker toggle event listeners
+    function switchPlatform(platform: string) {
+      // Update toggle buttons for Step 2
+      platformToggleBtns.forEach(btn => {
+        if (btn.getAttribute('data-platform') === platform) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Show/hide platform buttons
+      if (platform === 'dooprime') {
+        platformBtnDooprime?.classList.remove('hidden');
+        platformBtnCgtrade?.classList.add('hidden');
+      } else {
+        platformBtnDooprime?.classList.add('hidden');
+        platformBtnCgtrade?.classList.remove('hidden');
+      }
+    }
+
+    // Broker toggle event listeners (Step 1)
     brokerToggleBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const broker = btn.getAttribute('data-broker');
         if (broker) switchBroker(broker);
+      });
+    });
+
+    // Platform toggle event listeners (Step 2)
+    platformToggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const platform = btn.getAttribute('data-platform');
+        if (platform) switchPlatform(platform);
       });
     });
 
