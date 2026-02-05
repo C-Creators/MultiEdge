@@ -46,13 +46,24 @@ export const POST: APIRoute = async ({ cookies, request }) => {
         }, {
           onConflict: 'section,key'
         });
-      
-      if (error) {
-        console.error('Error updating content:', error);
-        return new Response(JSON.stringify({ error: error.message }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        
+        if (error) {
+          console.error('Error updating content:', error);
+          // Check if it's a table not found error
+          if (error.code === '42P01' || error.message?.includes('does not exist')) {
+            return new Response(JSON.stringify({ 
+              error: 'Database table not set up. Please run the SQL schema in Supabase.',
+              details: error.message 
+            }), {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
       }
     }
     
@@ -62,7 +73,10 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     });
   } catch (error) {
     console.error('Error processing request:', error);
-    return new Response(JSON.stringify({ error: 'Failed to update content' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to update content',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

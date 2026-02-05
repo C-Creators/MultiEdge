@@ -100,18 +100,23 @@ if (accessToken && refreshToken) {
   // Import Floating UI from ESM CDN
   import { computePosition, flip, shift, offset, arrow } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/+esm';
   
-  // Elements
+  // Elements - with null checks
   const toggle = document.getElementById('editModeToggle');
   const adminBar = document.getElementById('adminBar');
   const popover = document.getElementById('editPopover');
   const popoverKey = document.getElementById('popoverKey');
   const popoverEn = document.getElementById('popoverEn');
   const popoverEs = document.getElementById('popoverEs');
-  const popoverArrow = popover.querySelector('.popover-arrow');
+  const popoverArrow = popover?.querySelector('.popover-arrow');
   const toast = document.getElementById('editToast');
   const toastMsg = document.getElementById('editToastMsg');
   const sectionsPanel = document.getElementById('sectionsPanel');
   const sectionsList = document.getElementById('sectionsList');
+  
+  // Guard: exit if critical elements are missing
+  if (!toggle || !adminBar || !popover || !toast) {
+    console.warn('LiveEditor: Required elements not found');
+  }
   
   let editMode = false;
   let currentElement = null;
@@ -211,20 +216,20 @@ if (accessToken && refreshToken) {
   }
 
   // Toggle sections panel
-  document.getElementById('toggleSectionsBtn').addEventListener('click', () => {
-    sectionsPanel.classList.toggle('open');
-    if (sectionsPanel.classList.contains('open')) {
+  document.getElementById('toggleSectionsBtn')?.addEventListener('click', () => {
+    sectionsPanel?.classList.toggle('open');
+    if (sectionsPanel?.classList.contains('open')) {
       populateSectionsPanel();
     }
   });
 
-  document.getElementById('closeSectionsPanel').addEventListener('click', () => {
-    sectionsPanel.classList.remove('open');
+  document.getElementById('closeSectionsPanel')?.addEventListener('click', () => {
+    sectionsPanel?.classList.remove('open');
   });
 
   // Show all sections
-  document.getElementById('showAllSections').addEventListener('click', () => {
-    sectionsList.querySelectorAll('.visibility-toggle').forEach(btn => {
+  document.getElementById('showAllSections')?.addEventListener('click', () => {
+    sectionsList?.querySelectorAll('.visibility-toggle').forEach(btn => {
       btn.classList.add('visible');
       btn.classList.remove('hidden');
       const sectionId = btn.dataset.section;
@@ -237,32 +242,36 @@ if (accessToken && refreshToken) {
   });
 
   // Save section visibility
-  document.getElementById('saveSectionVisibility').addEventListener('click', () => {
+  document.getElementById('saveSectionVisibility')?.addEventListener('click', () => {
     const visibility = {};
-    sectionsList.querySelectorAll('.visibility-toggle').forEach(btn => {
+    sectionsList?.querySelectorAll('.visibility-toggle').forEach(btn => {
       visibility[btn.dataset.section] = btn.classList.contains('visible');
     });
     saveSectionVisibility(visibility);
     showToast('Section visibility saved!', false);
-    sectionsPanel.classList.remove('open');
+    sectionsPanel?.classList.remove('open');
   });
   
   // Toggle edit mode
   function setEditMode(enabled) {
+      if (!toggle || !adminBar) return;
       editMode = enabled;
       document.body.classList.toggle('live-edit-mode', enabled);
       adminBar.classList.toggle('visible', enabled);
-      toggle.querySelector('.icon-edit').style.display = enabled ? 'none' : 'block';
-      toggle.querySelector('.icon-eye').style.display = enabled ? 'block' : 'none';
-      toggle.querySelector('.edit-label').textContent = enabled ? 'Preview' : 'Edit';
+      const iconEdit = toggle.querySelector('.icon-edit');
+      const iconEye = toggle.querySelector('.icon-eye');
+      const editLabel = toggle.querySelector('.edit-label');
+      if (iconEdit) iconEdit.style.display = enabled ? 'none' : 'block';
+      if (iconEye) iconEye.style.display = enabled ? 'block' : 'none';
+      if (editLabel) editLabel.textContent = enabled ? 'Preview' : 'Edit';
       
       if (!enabled) {
         hidePopover();
       }
     }
     
-    toggle.addEventListener('click', () => setEditMode(!editMode));
-    document.getElementById('exitEditMode').addEventListener('click', () => setEditMode(false));
+    toggle?.addEventListener('click', () => setEditMode(!editMode));
+    document.getElementById('exitEditMode')?.addEventListener('click', () => setEditMode(false));
     
     // Click on editable elements
     document.addEventListener('click', (e) => {
@@ -360,8 +369,8 @@ if (accessToken && refreshToken) {
     }
     
     // Close button
-    document.getElementById('popoverClose').addEventListener('click', hidePopover);
-    document.getElementById('popoverCancel').addEventListener('click', hidePopover);
+    document.getElementById('popoverClose')?.addEventListener('click', hidePopover);
+    document.getElementById('popoverCancel')?.addEventListener('click', hidePopover);
     
     // Escape key closes popover
     document.addEventListener('keydown', (e) => {
@@ -371,8 +380,9 @@ if (accessToken && refreshToken) {
     });
     
     // Save
-    document.getElementById('popoverSave').addEventListener('click', async () => {
+    document.getElementById('popoverSave')?.addEventListener('click', async () => {
       const saveBtn = document.getElementById('popoverSave');
+      if (!saveBtn) return;
       const saveText = saveBtn.querySelector('.save-text');
       const saveLoading = saveBtn.querySelector('.save-loading');
       
@@ -384,6 +394,7 @@ if (accessToken && refreshToken) {
         const res = await fetch('/api/content/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             [currentKey]: {
               en: popoverEn.value,
@@ -392,7 +403,9 @@ if (accessToken && refreshToken) {
           })
         });
         
-        if (res.ok) {
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
           // Update displayed text immediately
           const currentLang = document.documentElement.getAttribute('data-lang') || 'en';
           const newValue = currentLang === 'en' ? popoverEn.value : popoverEs.value;
@@ -415,10 +428,13 @@ if (accessToken && refreshToken) {
           showToast('Saved successfully!', false);
           hidePopover();
         } else {
-          showToast('Failed to save', true);
+          const errorMsg = data.error || 'Failed to save';
+          console.error('Save error:', errorMsg);
+          showToast(errorMsg, true);
         }
       } catch (err) {
-        showToast('Error saving', true);
+        console.error('Save exception:', err);
+        showToast('Error saving: ' + (err.message || 'Unknown error'), true);
       }
       
       saveText.style.display = 'inline';
