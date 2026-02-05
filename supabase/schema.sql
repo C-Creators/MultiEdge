@@ -1,99 +1,78 @@
--- Supabase Database Schema for Duplifinance Admin
--- Run this in your Supabase SQL Editor to set up the required tables
+-- Duplifinance Database Schema
+-- Run this in Supabase Dashboard > SQL Editor > New Query
 
 -- ============================================
--- 1. SITE CONTENT TABLE
--- Stores all translatable text content
+-- SITE CONTENT TABLE
 -- ============================================
-CREATE TABLE IF NOT EXISTS site_content (
+CREATE TABLE IF NOT EXISTS public.site_content (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   section VARCHAR(100) NOT NULL,
   key VARCHAR(255) NOT NULL,
   en TEXT NOT NULL DEFAULT '',
   es TEXT NOT NULL DEFAULT '',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  
-  -- Unique constraint on section + key
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(section, key)
 );
 
--- Index for faster queries
-CREATE INDEX IF NOT EXISTS idx_site_content_section ON site_content(section);
-CREATE INDEX IF NOT EXISTS idx_site_content_updated ON site_content(updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_site_content_section ON public.site_content(section);
 
--- Enable Row Level Security
-ALTER TABLE site_content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.site_content ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated users to read/write
-CREATE POLICY "Allow authenticated read" ON site_content
-  FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "site_content_select" ON public.site_content;
+DROP POLICY IF EXISTS "site_content_insert" ON public.site_content;
+DROP POLICY IF EXISTS "site_content_update" ON public.site_content;
+DROP POLICY IF EXISTS "site_content_delete" ON public.site_content;
 
-CREATE POLICY "Allow authenticated insert" ON site_content
-  FOR INSERT TO authenticated WITH CHECK (true);
-
-CREATE POLICY "Allow authenticated update" ON site_content
-  FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-
-CREATE POLICY "Allow authenticated delete" ON site_content
-  FOR DELETE TO authenticated USING (true);
+CREATE POLICY "site_content_select" ON public.site_content FOR SELECT TO authenticated USING (true);
+CREATE POLICY "site_content_insert" ON public.site_content FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "site_content_update" ON public.site_content FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "site_content_delete" ON public.site_content FOR DELETE TO authenticated USING (true);
 
 -- ============================================
--- 2. SITE IMAGES TABLE (metadata)
--- Optional: stores image metadata
+-- SITE IMAGES TABLE
 -- ============================================
-CREATE TABLE IF NOT EXISTS site_images (
+CREATE TABLE IF NOT EXISTS public.site_images (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR(255) NOT NULL UNIQUE,
   url TEXT NOT NULL,
   alt_text VARCHAR(500),
   section VARCHAR(100),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable Row Level Security
-ALTER TABLE site_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.site_images ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated users to manage images
-CREATE POLICY "Allow authenticated read" ON site_images
-  FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "site_images_select" ON public.site_images;
+DROP POLICY IF EXISTS "site_images_insert" ON public.site_images;
+DROP POLICY IF EXISTS "site_images_update" ON public.site_images;
+DROP POLICY IF EXISTS "site_images_delete" ON public.site_images;
 
-CREATE POLICY "Allow authenticated insert" ON site_images
-  FOR INSERT TO authenticated WITH CHECK (true);
-
-CREATE POLICY "Allow authenticated update" ON site_images
-  FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-
-CREATE POLICY "Allow authenticated delete" ON site_images
-  FOR DELETE TO authenticated USING (true);
+CREATE POLICY "site_images_select" ON public.site_images FOR SELECT TO authenticated USING (true);
+CREATE POLICY "site_images_insert" ON public.site_images FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "site_images_update" ON public.site_images FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "site_images_delete" ON public.site_images FOR DELETE TO authenticated USING (true);
 
 -- ============================================
--- 3. SITE ANALYTICS TABLE (optional)
--- For custom analytics tracking
+-- SITE ANALYTICS TABLE
 -- ============================================
-CREATE TABLE IF NOT EXISTS site_analytics (
+CREATE TABLE IF NOT EXISTS public.site_analytics (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  date DATE NOT NULL,
+  date DATE NOT NULL UNIQUE,
   visitors INTEGER DEFAULT 0,
   pageviews INTEGER DEFAULT 0,
   bounce_rate DECIMAL(5,2),
-  avg_duration INTEGER, -- in seconds
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  
-  UNIQUE(date)
+  avg_duration INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_site_analytics_date ON site_analytics(date DESC);
+CREATE INDEX IF NOT EXISTS idx_site_analytics_date ON public.site_analytics(date DESC);
 
--- Enable Row Level Security
-ALTER TABLE site_analytics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.site_analytics ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow authenticated read" ON site_analytics
-  FOR SELECT TO authenticated USING (true);
-
-CREATE POLICY "Allow service role insert" ON site_analytics
-  FOR INSERT TO service_role WITH CHECK (true);
+DROP POLICY IF EXISTS "site_analytics_select" ON public.site_analytics;
+CREATE POLICY "site_analytics_select" ON public.site_analytics FOR SELECT TO authenticated USING (true);
 
 -- ============================================
 -- 4. STORAGE BUCKET
