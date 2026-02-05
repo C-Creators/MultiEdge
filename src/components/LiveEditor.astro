@@ -100,6 +100,8 @@ if (accessToken && refreshToken) {
   // Import Floating UI from ESM CDN
   import { computePosition, flip, shift, offset, arrow } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/+esm';
   
+  console.log('LiveEditor: Script starting...');
+  
   // Elements - with null checks
   const toggle = document.getElementById('editModeToggle');
   const adminBar = document.getElementById('adminBar');
@@ -115,7 +117,9 @@ if (accessToken && refreshToken) {
   
   // Guard: exit if critical elements are missing
   if (!toggle || !adminBar || !popover || !toast) {
-    console.warn('LiveEditor: Required elements not found');
+    console.error('LiveEditor: Required elements not found', { toggle, adminBar, popover, toast });
+  } else {
+    console.log('LiveEditor: All elements found, initializing...');
   }
   
   let editMode = false;
@@ -380,17 +384,22 @@ if (accessToken && refreshToken) {
     });
     
     // Save
-    document.getElementById('popoverSave')?.addEventListener('click', async () => {
+    const saveButton = document.getElementById('popoverSave');
+    console.log('LiveEditor: Save button found:', !!saveButton);
+    
+    saveButton?.addEventListener('click', async () => {
+      console.log('LiveEditor: Save clicked, key:', currentKey);
       const saveBtn = document.getElementById('popoverSave');
       if (!saveBtn) return;
       const saveText = saveBtn.querySelector('.save-text');
       const saveLoading = saveBtn.querySelector('.save-loading');
       
-      saveText.style.display = 'none';
-      saveLoading.style.display = 'inline';
+      if (saveText) saveText.style.display = 'none';
+      if (saveLoading) saveLoading.style.display = 'inline';
       saveBtn.disabled = true;
       
       try {
+        console.log('LiveEditor: Sending save request...');
         const res = await fetch('/api/content/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
