@@ -28,14 +28,17 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   
   try {
     const changes = await request.json() as Record<string, { en: string; es: string }>;
+    console.log('Content update request:', JSON.stringify(changes));
     
     // Update each changed content item
     for (const [key, values] of Object.entries(changes)) {
       const [section, ...keyParts] = key.split('.');
       const contentKey = keyParts.join('.');
       
+      console.log(`Upserting: section=${section}, key=${contentKey}`);
+      
       // Upsert the content
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('site_content')
         .upsert({
           section,
@@ -45,7 +48,10 @@ export const POST: APIRoute = async ({ cookies, request }) => {
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'section,key'
-        });
+        })
+        .select();
+        
+      console.log('Upsert result:', { data, error });
         
       if (error) {
         console.error('Error updating content:', error);

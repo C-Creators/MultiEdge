@@ -12,9 +12,12 @@ export interface TranslationData {
  */
 export async function getTranslations(): Promise<TranslationData> {
   try {
+    console.log('Fetching translations from Supabase...');
     const { data, error } = await supabase
       .from('site_content')
       .select('section, key, en, es');
+    
+    console.log('Supabase response:', { data: data?.length || 0, error });
     
     if (error) {
       console.error('Error fetching translations:', error);
@@ -22,8 +25,11 @@ export async function getTranslations(): Promise<TranslationData> {
     }
     
     if (!data || data.length === 0) {
+      console.log('No data from Supabase, using file translations');
       return fileTranslations;
     }
+    
+    console.log('Merging', data.length, 'items from Supabase');
     
     // Deep clone file translations
     const merged: TranslationData = {

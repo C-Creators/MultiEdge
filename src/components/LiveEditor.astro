@@ -413,32 +413,42 @@ if (accessToken && refreshToken) {
         });
         
         const data = await res.json();
+        console.log('LiveEditor: Response:', res.status, data);
         
         if (res.ok && data.success) {
           // Update displayed text immediately
           const currentLang = document.documentElement.getAttribute('data-lang') || 'en';
           const newValue = currentLang === 'en' ? popoverEn.value : popoverEs.value;
-          currentElement.textContent = newValue;
+          if (currentElement) {
+            currentElement.textContent = newValue;
+            // Flash success on element
+            currentElement.classList.add('edit-saved');
+            setTimeout(() => currentElement?.classList.remove('edit-saved'), 1500);
+          }
           
           // Update global translations
-          const [section, ...keyParts] = currentKey.split('.');
-          ['en', 'es'].forEach(lang => {
-            let obj = window.__TRANSLATIONS__[lang][section];
-            for (let i = 0; i < keyParts.length - 1; i++) {
-              obj = obj[keyParts[i]] = obj[keyParts[i]] || {};
-            }
-            obj[keyParts[keyParts.length - 1]] = lang === 'en' ? popoverEn.value : popoverEs.value;
-          });
-          
-          // Flash success on element
-          currentElement.classList.add('edit-saved');
-          setTimeout(() => currentElement.classList.remove('edit-saved'), 1500);
+          if (currentKey && window.__TRANSLATIONS__) {
+            const [section, ...keyParts] = currentKey.split('.');
+            ['en', 'es'].forEach(lang => {
+              try {
+                let obj = window.__TRANSLATIONS__[lang]?.[section];
+                if (obj) {
+                  for (let i = 0; i < keyParts.length - 1; i++) {
+                    obj = obj[keyParts[i]] = obj[keyParts[i]] || {};
+                  }
+                  obj[keyParts[keyParts.length - 1]] = lang === 'en' ? popoverEn.value : popoverEs.value;
+                }
+              } catch (e) {
+                console.warn('Could not update translations cache:', e);
+              }
+            });
+          }
           
           showToast('Saved successfully!', false);
           hidePopover();
         } else {
           const errorMsg = data.error || 'Failed to save';
-          console.error('Save error:', errorMsg);
+          console.error('Save error:', errorMsg, data);
           showToast(errorMsg, true);
         }
       } catch (err) {
@@ -446,9 +456,9 @@ if (accessToken && refreshToken) {
         showToast('Error saving: ' + (err.message || 'Unknown error'), true);
       }
       
-      saveText.style.display = 'inline';
-      saveLoading.style.display = 'none';
-      saveBtn.disabled = false;
+      if (saveText) saveText.style.display = 'inline';
+      if (saveLoading) saveLoading.style.display = 'none';
+      if (saveBtn) saveBtn.disabled = false;
     });
     
     // Toast

@@ -24,7 +24,8 @@ DROP POLICY IF EXISTS "site_content_insert" ON public.site_content;
 DROP POLICY IF EXISTS "site_content_update" ON public.site_content;
 DROP POLICY IF EXISTS "site_content_delete" ON public.site_content;
 
-CREATE POLICY "site_content_select" ON public.site_content FOR SELECT TO authenticated USING (true);
+-- Allow authenticated users full access
+CREATE POLICY "site_content_select" ON public.site_content FOR SELECT TO authenticated, anon USING (true);
 CREATE POLICY "site_content_insert" ON public.site_content FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "site_content_update" ON public.site_content FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "site_content_delete" ON public.site_content FOR DELETE TO authenticated USING (true);
